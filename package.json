@@ -1,0 +1,17 @@
+{
+  "name": "@absolutejs/voice-adapters",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "assemblyai",
+    "deepgram",
+    "elevenlabs",
+    "gemini",
+    "openai"
+  ],
+  "scripts": {
+    "build": "bun run --filter './*' build",
+    "test": "bun run --filter './*' test",
+    "typecheck": "bun run --filter './*' typecheck"
+  }
+}
