@@ -13,6 +13,17 @@ type ListenerMap = {
 
 const STREAM_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 const WEBSOCKET_URL = 'wss://api.elevenlabs.io/v1/text-to-speech';
+
+// Opportunistic HTTP/2 multiplexing for outbound HTTPS calls (Bun 1.3.14+).
+// The `protocol` option lands in @types/bun 1.3.14; widen locally for now.
+type H2Init = RequestInit & { protocol?: 'http2' };
+const isHttpsUrl = (url: string | URL) =>
+	typeof url === 'string'
+		? url.startsWith('https://')
+		: url.protocol === 'https:';
+const h2IfHttps = (url: string | URL): H2Init =>
+	isHttpsUrl(url) ? { protocol: 'http2' } : {};
+
 const DEFAULT_WEBSOCKET_KEEPALIVE_INTERVAL_MS = 15_000;
 const DEFAULT_WEBSOCKET_FINAL_IDLE_TIMEOUT_MS = 350;
 const DEFAULT_WEBSOCKET_GENERATION_TIMEOUT_MS = 20_000;
@@ -652,7 +663,9 @@ export const elevenlabs = (
 				activeControllers.add(controller);
 
 				try {
-					const response = await fetch(buildHttpUrl(config), {
+					const target = buildHttpUrl(config);
+					const response = await fetch(target, {
+						...h2IfHttps(target),
 						body: JSON.stringify(
 							buildRequestPayload(config, trimmed)
 						),
