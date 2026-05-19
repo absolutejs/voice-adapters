@@ -46,3 +46,29 @@ export type AzureTTSOptions = AzureTTSAuth & {
 	voice: string;
 	voiceStyle?: string;
 };
+
+export type AzureSTTAuth =
+	| { subscriptionKey: string; token?: never }
+	| { subscriptionKey?: never; token: string };
+
+export type AzureSTTRecognitionMode = 'conversation' | 'dictation' | 'interactive';
+
+export type AzureSTTOutputFormat = 'detailed' | 'simple';
+
+export type AzureSTTProfanityMode = 'masked' | 'raw' | 'removed';
+
+export type AzureSTTOptions = AzureSTTAuth & {
+	baseUrl?: string;
+	connectTimeoutMs?: number;
+	endpointPath?: string;
+	format?: AzureSTTOutputFormat;
+	language?: string;
+	profanity?: AzureSTTProfanityMode;
+	recognitionMode?: AzureSTTRecognitionMode;
+	region?: string;
+	systemName?: string;
+	systemVersion?: string;
+	webSocket?: {
+		factory?: (url: string, headers: Record<string, string>) => WebSocket;
+	};
+};

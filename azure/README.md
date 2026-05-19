@@ -1,8 +1,6 @@
 # `@absolutejs/voice-azure`
 
-Azure Speech (Cognitive Services) adapter for `@absolutejs/voice`.
-
-Currently ships **Neural Text-to-Speech** via Azure's REST `/cognitiveservices/v1` endpoint. Streaming Speech-to-Text via Azure's WebSocket USP protocol is the next package update (see "Roadmap" below).
+Azure Speech (Cognitive Services) adapter for `@absolutejs/voice` — Neural TTS over REST plus streaming STT over Azure's WebSocket Unified Speech Protocol.
 
 ## Install
 
@@ -75,8 +73,52 @@ azureTTS({ region, token, voice });
 - Whitespace-only `send()` is a no-op (matches the ElevenLabs and Cartesia adapters).
 - Bearer tokens expire after 10 minutes by default — refresh externally and pass the new value into a fresh adapter, or stick with `subscriptionKey` for long-running deployments.
 
+## STT
+
+```ts
+import { voice } from "@absolutejs/voice";
+import { azureSTT, azureTTS } from "@absolutejs/voice-azure";
+
+const app = voice({
+  stt: azureSTT({
+    region: "eastus",
+    subscriptionKey: process.env.AZURE_SPEECH_KEY!,
+    language: "en-US",
+    // optional:
+    recognitionMode: "conversation", // 'conversation' | 'dictation' | 'interactive'
+    format: "detailed",              // 'detailed' | 'simple'
+    profanity: "masked",             // 'masked' | 'raw' | 'removed'
+  }),
+  tts: azureTTS({ region: "eastus", subscriptionKey, voice: "en-US-JennyNeural" }),
+});
+```
+
+The STT adapter speaks Azure's WebSocket Unified Speech Protocol directly (no Microsoft SDK dependency):
+
+- Connects to `wss://{region}.stt.speech.microsoft.com/speech/recognition/{mode}/cognitiveservices/v1`
+- Authenticates via `Ocp-Apim-Subscription-Key` or `Authorization: Bearer <token>` header.
+- Sends a `speech.config` text frame with system metadata on open, then queues any audio sent before the socket finished opening.
+- Prepends a 44-byte RIFF/WAV header to the first audio chunk (using the format declared in `STTAdapterOpenOptions.format`) and ships subsequent chunks as raw PCM under the same `audio/x-wav` content type.
+- Maps `speech.hypothesis` → `partial` events, `speech.phrase` → `final` events (`RecognitionStatus === "Success"` only, with `NBest[0].Confidence` lifted onto the transcript), and `turn.end` → `endOfTurn` with `reason: "vendor"`.
+
+### STT options
+
+| Option | Required | Default | Notes |
+| --- | --- | --- | --- |
+| `subscriptionKey` / `token` | one of | — | Same auth choices as TTS. |
+| `region` | yes\* | — | Azure region. \* Or pass `baseUrl`. |
+| `baseUrl` | no | `wss://{region}.stt.speech.microsoft.com` | Override for sovereign clouds, private endpoints, or test stubs. |
+| `endpointPath` | no | `/speech/recognition/{mode}/cognitiveservices/v1` | Override if you front the service with a gateway. |
+| `recognitionMode` | no | `conversation` | `conversation` / `dictation` / `interactive`. |
+| `format` | no | `detailed` | `detailed` keeps confidence; `simple` is leaner. |
+| `language` | no | `en-US` | Used when `STTAdapterOpenOptions.languageStrategy` doesn't fix one. |
+| `profanity` | no | — | Forwarded as `?profanity=...`. |
+| `systemName` / `systemVersion` | no | `@absolutejs/voice-azure` / `0.0.1` | Sent in the speech.config telemetry blob. |
+| `connectTimeoutMs` | no | `8000` | Open-handshake timeout. |
+| `webSocket.factory` | no | `new WebSocket(url, { headers })` | Inject a fake socket for tests. |
+
 ## Roadmap
 
-- **STT (streaming via WebSocket USP)** — next package update. Will land as `azureSTT({ region, subscriptionKey, language, ... })` in this same package without breaking existing `azureTTS` callers.
-- **Custom voices / endpoint id** — once the TTS path has a paying customer who needs it.
+- **Custom voices / endpoint id** — once a paying customer asks.
 - **Speaker recognition / pronunciation assessment** — out of scope for the voice-agent path; covered better by direct Azure SDK use.
+- **Translation Speech** — could be added if multilingual voice agents need on-the-fly translation as part of the pipeline.

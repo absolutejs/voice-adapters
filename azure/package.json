@@ -1,7 +1,7 @@
 {
 	"name": "@absolutejs/voice-azure",
-	"version": "0.0.1-beta.1",
-	"description": "Azure Speech (Cognitive Services) adapter for @absolutejs/voice — Neural TTS shipped, streaming STT next",
+	"version": "0.0.1-beta.2",
+	"description": "Azure Speech (Cognitive Services) adapter for @absolutejs/voice — Neural TTS over REST + streaming STT over the WebSocket Unified Speech Protocol",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/absolutejs/voice-adapters.git",
