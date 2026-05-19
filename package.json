@@ -10,8 +10,11 @@
     "elevenlabs",
     "gemini",
     "gladia",
+    "lmnt",
     "openai",
     "playht",
+    "rime",
+    "soniox",
     "speechmatics"
   ],
   "scripts": {
