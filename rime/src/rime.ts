@@ -161,6 +161,13 @@ export const rime = (config: RimeTTSOptions): TTSAdapter => {
 						type: 'close'
 					});
 				},
+				cancel: async (reason?: string) => {
+					if (closed) return;
+					for (const controller of activeControllers) {
+						controller.abort(reason ?? "cancelled");
+					}
+					activeControllers.clear();
+				},
 				on: (event, handler) => {
 					listeners[event].add(handler as never);
 					return () => {

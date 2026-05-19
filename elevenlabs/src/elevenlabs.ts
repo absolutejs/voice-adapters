@@ -560,6 +560,21 @@ export const elevenlabs = (
 
 					closeSocket(reason);
 				},
+				cancel: async (reason?: string) => {
+					if (closed) {
+						return;
+					}
+
+					rejectPendingGeneration(
+						new Error(reason ?? 'cancelled')
+					);
+
+					try {
+						if (socket?.readyState === WebSocket.OPEN) {
+							sendSocketMessage({ text: '' });
+						}
+					} catch {}
+				},
 				on: (event, handler) => {
 					listeners[event].add(handler as never);
 
@@ -641,6 +656,15 @@ export const elevenlabs = (
 					recoverable: false,
 					type: 'close'
 				});
+			},
+			cancel: async (reason?: string) => {
+				if (closed) {
+					return;
+				}
+				for (const controller of activeControllers) {
+					controller.abort(reason ?? 'cancelled');
+				}
+				activeControllers.clear();
 			},
 			on: (event, handler) => {
 				listeners[event].add(handler as never);
