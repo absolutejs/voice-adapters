@@ -4,6 +4,7 @@
   "type": "module",
   "workspaces": [
     "assemblyai",
+    "azure",
     "cartesia",
     "deepgram",
     "elevenlabs",
