@@ -18,7 +18,7 @@
     },
     "azure": {
       "name": "@absolutejs/voice-azure",
-      "version": "0.0.1-beta.1",
+      "version": "0.0.1-beta.2",
       "dependencies": {
         "@absolutejs/voice": "0.0.22-beta.471",
       },
@@ -83,6 +83,17 @@
         "typescript": "^5.9.3",
       },
     },
+    "playht": {
+      "name": "@absolutejs/voice-playht",
+      "version": "0.0.1-beta.1",
+      "dependencies": {
+        "@absolutejs/voice": "0.0.22-beta.471",
+      },
+      "devDependencies": {
+        "@types/bun": "1.3.9",
+        "typescript": "^5.9.3",
+      },
+    },
   },
   "packages": {
     "@absolutejs/absolute": ["@absolutejs/absolute@0.19.0-beta.648", "", { "dependencies": { "@angular/compiler": "^21.0.0", "zustand": "^5.0.12" }, "optionalDependencies": { "@absolutejs/native-darwin-arm64": "0.19.0-beta.648", "@absolutejs/native-darwin-x64": "0.19.0-beta.648", "@absolutejs/native-linux-arm64": "0.19.0-beta.648", "@absolutejs/native-linux-x64": "0.19.0-beta.648", "@absolutejs/native-windows-arm64": "0.19.0-beta.648", "@absolutejs/native-windows-x64": "0.19.0-beta.648" }, "peerDependencies": { "@angular/common": "^21.0.0", "@angular/compiler-cli": "^21.0.0", "@angular/core": "^21.0.0", "@angular/platform-browser": "^21.0.0", "@angular/platform-server": "^21.0.0", "@angular/ssr": "^21.0.0", "elysia": "^1.4.0", "react": "^19.2.0", "react-dom": "^19.2.0", "react-refresh": "^0.18.0", "sharp": ">=0.33.0", "svelte": "^5.35.2", "vue": "^3.5.27", "zone.js": "^0.15.0" }, "optionalPeers": ["@angular/common", "@angular/compiler-cli", "@angular/core", "@angular/platform-browser", "@angular/platform-server", "@angular/ssr", "react", "react-dom", "react-refresh", "sharp", "svelte", "vue", "zone.js"], "bin": { "absolute": "dist/cli/index.js" } }, "sha512-pZNHUYKdlNaxYOyAzBLplv0nJHMuan/ujzI0JZnCe9juE8Av2ceUEjnlSHk00qPvZZ/95NfzUqgt5tBkJCZUaQ=="],
@@ -116,6 +127,8 @@
     "@absolutejs/voice-gemini": ["@absolutejs/voice-gemini@workspace:gemini"],
 
     "@absolutejs/voice-openai": ["@absolutejs/voice-openai@workspace:openai"],
+
+    "@absolutejs/voice-playht": ["@absolutejs/voice-playht@workspace:playht"],
 
     "@angular/compiler": ["@angular/compiler@21.2.13", "", { "dependencies": { "tslib": "^2.3.0" } }, "sha512-0OZk5ujHgowRme3iXJ1Ce1OI3eTDcGovBARBiyJT0E8kt9Y0TdQdGaYMRrNN1UzDv4hk8f1d/xVeF0BpMTvqPQ=="],
 
@@ -171,8 +184,12 @@
 
     "@absolutejs/voice-cartesia/@absolutejs/voice": ["@absolutejs/voice@0.0.22-beta.471", "", { "dependencies": { "@absolutejs/media": "0.0.1-beta.16" }, "peerDependencies": { "@absolutejs/absolute": ">=0.19.0-beta.646", "@angular/core": ">=21.0.0", "elysia": ">=1.4.18", "react": ">=19.0.0", "vue": ">=3.5.0" }, "optionalPeers": ["@angular/core", "react", "vue"] }, "sha512-birgWx8r3k+DlFijG1Q3f1bLl3EI96BOwgIVaTYaBNbT+/Yt+H+fT15mfcS9tWTxs1BgaR0ouUYQ1rKh0lsB3Q=="],
 
+    "@absolutejs/voice-playht/@absolutejs/voice": ["@absolutejs/voice@0.0.22-beta.471", "", { "dependencies": { "@absolutejs/media": "0.0.1-beta.16" }, "peerDependencies": { "@absolutejs/absolute": ">=0.19.0-beta.646", "@angular/core": ">=21.0.0", "elysia": ">=1.4.18", "react": ">=19.0.0", "vue": ">=3.5.0" }, "optionalPeers": ["@angular/core", "react", "vue"] }, "sha512-birgWx8r3k+DlFijG1Q3f1bLl3EI96BOwgIVaTYaBNbT+/Yt+H+fT15mfcS9tWTxs1BgaR0ouUYQ1rKh0lsB3Q=="],
+
     "@absolutejs/voice-azure/@absolutejs/voice/@absolutejs/media": ["@absolutejs/media@0.0.1-beta.16", "", {}, "sha512-j/q4vQYucokeLp6XkAAduon+3pO/IeUI8fNRRQ2OyZ+QB+Ph/slP3oPaPOJNWW+RAcg0ZGWX4XfJhGgAhZ/ztw=="],
 
     "@absolutejs/voice-cartesia/@absolutejs/voice/@absolutejs/media": ["@absolutejs/media@0.0.1-beta.16", "", {}, "sha512-j/q4vQYucokeLp6XkAAduon+3pO/IeUI8fNRRQ2OyZ+QB+Ph/slP3oPaPOJNWW+RAcg0ZGWX4XfJhGgAhZ/ztw=="],
+
+    "@absolutejs/voice-playht/@absolutejs/voice/@absolutejs/media": ["@absolutejs/media@0.0.1-beta.16", "", {}, "sha512-j/q4vQYucokeLp6XkAAduon+3pO/IeUI8fNRRQ2OyZ+QB+Ph/slP3oPaPOJNWW+RAcg0ZGWX4XfJhGgAhZ/ztw=="],
   }
 }
