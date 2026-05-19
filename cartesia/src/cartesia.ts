@@ -285,9 +285,18 @@ export const cartesia = (config: CartesiaTTSOptions): TTSAdapter => {
 				});
 			};
 
+			const cancel = async (reason?: string) => {
+				if (closed) return;
+				for (const controller of activeControllers) {
+					controller.abort(reason ?? 'cancelled');
+				}
+				activeControllers.clear();
+			};
+
 			const on: ReturnType<TTSAdapter['open']> extends Promise<infer S>
 				? S
 				: ReturnType<TTSAdapter['open']> = {
+				cancel,
 				close,
 				on: (event, handler) => {
 					listeners[event].add(handler as never);
