@@ -1,2 +1,6 @@
-// Filled in below in this commit.
-export {};
+export { soniox } from './soniox';
+export type {
+	SonioxAudioEncoding,
+	SonioxModel,
+	SonioxSTTOptions
+} from './types';
