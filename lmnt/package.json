@@ -29,7 +29,7 @@
 		"typecheck": "bun run tsc --noEmit"
 	},
 	"dependencies": {
-		"@absolutejs/voice": "0.0.22-beta.471"
+		"@absolutejs/voice": "0.0.22-beta.474"
 	},
 	"devDependencies": {
 		"@types/bun": "1.3.9",
