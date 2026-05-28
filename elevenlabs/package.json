@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-elevenlabs",
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"description": "ElevenLabs text-to-speech adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

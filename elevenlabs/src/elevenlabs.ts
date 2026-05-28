@@ -279,6 +279,7 @@ export const elevenlabs = (
 		const outputFormat = config.outputFormat ?? 'pcm_16000';
 		const audioFormat = resolveAudioFormat(outputFormat);
 		const activeControllers = new Set<AbortController>();
+		const fetchImpl = config.fetch ?? fetch;
 		let closed = false;
 
 		if (config.transport === 'websocket') {
@@ -705,7 +706,7 @@ export const elevenlabs = (
 
 				try {
 					const target = buildHttpUrl(config);
-					const response = await fetch(target, {
+					const response = await fetchImpl(target, {
 						...h2IfHttps(target),
 						body: JSON.stringify(
 							buildRequestPayload(config, trimmed)
@@ -719,8 +720,13 @@ export const elevenlabs = (
 					});
 
 					if (!response.ok || !response.body) {
+						const bodyText = await response
+							.text()
+							.catch(() => '');
 						throw new Error(
-							`ElevenLabs returned ${response.status} ${response.statusText}`
+							`ElevenLabs returned ${response.status} ${response.statusText}${
+								bodyText ? `: ${bodyText.slice(0, 500)}` : ''
+							}`
 						);
 					}
 

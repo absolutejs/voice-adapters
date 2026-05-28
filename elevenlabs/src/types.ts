@@ -46,6 +46,7 @@ export type ElevenLabsWebSocketOptions = {
 export type ElevenLabsTTSOptions = {
 	apiKey: string;
 	voiceId: string;
+	fetch?: typeof fetch;
 	modelId?: ElevenLabsTTSModel;
 	outputFormat?: ElevenLabsOutputFormat;
 	languageCode?: string;

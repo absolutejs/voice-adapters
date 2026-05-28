@@ -224,3 +224,44 @@ describe('elevenlabs websocket transport', () => {
 		await session.close('done');
 	});
 });
+
+describe('elevenlabs http transport', () => {
+	test('preserves provider error body in HTTP streaming errors', async () => {
+		const adapter = elevenlabs({
+			apiKey: 'test-api-key',
+			fetch: Object.assign(
+				() =>
+					Promise.resolve(
+						new Response(
+							JSON.stringify({
+								detail: {
+									message: 'payment_required',
+									status: 'paid_plan_required'
+								}
+							}),
+							{
+								status: 402,
+								statusText: 'Payment Required'
+							}
+						)
+					) as ReturnType<typeof fetch>,
+				{ preconnect: fetch.preconnect }
+			) as typeof fetch,
+			outputFormat: 'pcm_16000',
+			transport: 'http',
+			voiceId: 'voice_123'
+		});
+		const session = await adapter.open();
+		const errors: string[] = [];
+		session.on('error', (event) => {
+			errors.push(event.error.message);
+		});
+
+		await session.send('Needs a paid plan');
+
+		expect(errors).toHaveLength(1);
+		expect(errors[0]).toContain('402 Payment Required');
+		expect(errors[0]).toContain('payment_required');
+		expect(errors[0]).toContain('paid_plan_required');
+	});
+});
