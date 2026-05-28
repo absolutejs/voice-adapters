@@ -55,15 +55,32 @@ const resolveErrorMessage = (error: unknown): string => {
 
 	if (error && typeof error === 'object') {
 		const record = error as Record<string, unknown>;
-		for (const key of ['message', 'reason', 'description', 'detail']) {
-			const candidate = record[key];
-			if (typeof candidate === 'string' && candidate.trim()) {
-				return candidate;
+		if ('error' in record) {
+			return resolveErrorMessage(record.error);
+		}
+		if (record.detail && typeof record.detail === 'object') {
+			const detailMessage = resolveErrorMessage(record.detail);
+			if (detailMessage !== 'ElevenLabs TTS request failed') {
+				return detailMessage;
 			}
 		}
 
-		if ('error' in record) {
-			return resolveErrorMessage(record.error);
+		const parts = [
+			record.code,
+			record.status,
+			record.message,
+			record.reason,
+			record.description,
+			record.detail
+		]
+			.filter(
+				(part): part is string =>
+					typeof part === 'string' && part.trim().length > 0
+			)
+			.map((part) => part.trim());
+
+		if (parts.length > 0) {
+			return [...new Set(parts)].join(': ');
 		}
 
 		try {

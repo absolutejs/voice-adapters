@@ -182,4 +182,45 @@ describe('elevenlabs websocket transport', () => {
 		await sendPromise;
 		await session.close('done');
 	});
+
+	test('preserves provider error code, status, and message in websocket errors', async () => {
+		globalThis.WebSocket = FakeWebSocket as unknown as typeof WebSocket;
+
+		const adapter = elevenlabs({
+			apiKey: 'test-api-key',
+			outputFormat: 'pcm_16000',
+			transport: 'websocket',
+			voiceId: 'voice_123'
+		});
+		const session = await adapter.open({
+			sessionId: 'ws-error-test'
+		});
+		const socket = FakeWebSocket.instances[0]!;
+		const errors: string[] = [];
+		session.on('error', (event) => {
+			errors.push(event.error.message);
+		});
+
+		await Promise.resolve();
+
+		const sendPromise = session.send('Needs a paid plan');
+		await waitFor(() => socket.sent.length >= 2);
+		socket.receive({
+			error: {
+				code: 'paid_plan_required',
+				message: 'payment_required',
+				status: 'payment_required',
+				detail:
+					'Free users cannot use library voices via the API. Please upgrade your subscription to use this voice.'
+			}
+		});
+
+		await expect(sendPromise).rejects.toThrow(
+			'paid_plan_required: payment_required: Free users cannot use library voices via the API. Please upgrade your subscription to use this voice.'
+		);
+		expect(errors).toEqual([
+			'paid_plan_required: payment_required: Free users cannot use library voices via the API. Please upgrade your subscription to use this voice.'
+		]);
+		await session.close('done');
+	});
 });
