@@ -732,6 +732,17 @@ export const elevenlabs = (
 
 					const reader = response.body.getReader();
 
+					// Raw 16-bit PCM must stay sample-aligned. HTTP read() yields
+					// arbitrary network byte boundaries that can split a 2-byte
+					// sample across two chunks; a stateless per-chunk PCM decoder
+					// then drops the odd byte and misaligns every following
+					// sample → loud static. Carry the odd trailing byte into the
+					// next chunk so every emitted PCM chunk has whole samples.
+					// (mulaw/alaw are 1 byte/sample, so they pass through.)
+					const bytesPerSample =
+						audioFormat.encoding === 'pcm_s16le' ? 2 : 1;
+					let carry: Uint8Array | null = null;
+
 					try {
 						while (true) {
 							const { done, value } = await reader.read();
@@ -739,8 +750,32 @@ export const elevenlabs = (
 								break;
 							}
 
+							let bytes = value;
+							if (bytesPerSample > 1) {
+								if (carry && carry.length > 0) {
+									const merged = new Uint8Array(
+										carry.length + value.length
+									);
+									merged.set(carry, 0);
+									merged.set(value, carry.length);
+									bytes = merged;
+									carry = null;
+								}
+								const remainder = bytes.length % bytesPerSample;
+								if (remainder !== 0) {
+									carry = bytes.slice(bytes.length - remainder);
+									bytes = bytes.subarray(
+										0,
+										bytes.length - remainder
+									);
+								}
+								if (bytes.length === 0) {
+									continue;
+								}
+							}
+
 							await emit(listeners, 'audio', {
-								chunk: value,
+								chunk: bytes,
 								format: audioFormat,
 								receivedAt: Date.now(),
 								type: 'audio'
