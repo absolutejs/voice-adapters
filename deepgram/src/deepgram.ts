@@ -4,7 +4,7 @@ import type {
 	STTSessionEventMap,
 	Transcript
 } from '@absolutejs/voice';
-import type { DeepgramSTTOptions } from './types';
+import type { DeepgramResolvedSTTOptions, DeepgramSTTOptions } from './types';
 
 type VoicePhraseHintCompat = {
 	text: string;
@@ -425,7 +425,7 @@ const resolveStrategyLanguage = (options: DeepgramAdapterOpenOptions) => {
 };
 
 const resolveDeepgramModel = (
-	config: DeepgramSTTOptions,
+	config: DeepgramResolvedSTTOptions,
 	options: DeepgramAdapterOpenOptions
 ) => {
 	if (config.model !== 'flux') {
@@ -457,7 +457,7 @@ type DeepgramOpenContext = Pick<DeepgramAdapterOpenOptions, 'languageStrategy' |
 };
 
 const buildLiveOptions = (
-	config: DeepgramSTTOptions,
+	config: DeepgramResolvedSTTOptions,
 	format: { channels: number; sampleRateHz: number },
 	options: DeepgramAdapterOpenOptions
 ) => {
@@ -539,7 +539,7 @@ const buildLiveOptions = (
 };
 
 const buildUrl = (
-	config: DeepgramSTTOptions,
+	config: DeepgramResolvedSTTOptions,
 	input: {
 		context: DeepgramOpenContext;
 		phraseHintTerms?: string[];

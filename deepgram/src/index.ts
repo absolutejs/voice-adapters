@@ -1,2 +1,9 @@
 export { deepgram } from './deepgram';
-export type { DeepgramModel, DeepgramSTTOptions } from './types';
+export type {
+	DeepgramConversationalOptions,
+	DeepgramFluxModel,
+	DeepgramModel,
+	DeepgramNovaModel,
+	DeepgramSTTOptions,
+	DeepgramTranscriptionOptions,
+} from './types';
