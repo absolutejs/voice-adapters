@@ -29,5 +29,9 @@
   },
   "devDependencies": {
     "@absolutejs/absolute": "^0.19.0-beta.1051"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/absolutejs/voice-adapters/issues"
+  },
+  "homepage": "https://github.com/absolutejs/voice-adapters#readme"
 }
