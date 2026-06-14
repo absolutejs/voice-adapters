@@ -7,6 +7,10 @@
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "openai"
 	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/openai#readme",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
+	},
 	"files": [
 		"dist",
 		"README.md"
