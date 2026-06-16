@@ -1,11 +1,15 @@
 {
 	"name": "@absolutejs/voice-speechmatics",
-	"version": "0.0.1-beta.1",
+	"version": "0.0.1-beta.2",
 	"description": "Speechmatics real-time speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "speechmatics"
+	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/speechmatics",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
 	},
 	"files": [
 		"dist",

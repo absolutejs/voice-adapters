@@ -7,6 +7,10 @@
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "deepgram"
 	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/deepgram",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
+	},
 	"files": [
 		"dist",
 		"README.md"

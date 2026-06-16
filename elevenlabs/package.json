@@ -7,6 +7,10 @@
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "elevenlabs"
 	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/elevenlabs",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
+	},
 	"files": [
 		"dist",
 		"README.md"

@@ -1,11 +1,15 @@
 {
 	"name": "@absolutejs/voice-rime",
-	"version": "0.0.1-beta.2",
+	"version": "0.0.1-beta.3",
 	"description": "Rime text-to-speech adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "rime"
+	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/rime",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
 	},
 	"files": [
 		"dist",

@@ -1,11 +1,15 @@
 {
 	"name": "@absolutejs/voice-assemblyai",
-	"version": "0.0.19-beta.123",
+	"version": "0.0.19-beta.124",
 	"description": "AssemblyAI speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "assemblyai"
+	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/assemblyai",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
 	},
 	"files": [
 		"dist",

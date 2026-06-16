@@ -1,11 +1,15 @@
 {
 	"name": "@absolutejs/voice-cartesia",
-	"version": "0.0.1-beta.2",
+	"version": "0.0.1-beta.3",
 	"description": "Cartesia text-to-speech adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/absolutejs/voice-adapters.git",
 		"directory": "cartesia"
+	},
+	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/cartesia",
+	"bugs": {
+		"url": "https://github.com/absolutejs/voice-adapters/issues"
 	},
 	"files": [
 		"dist",
