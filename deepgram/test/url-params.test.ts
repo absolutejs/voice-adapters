@@ -292,7 +292,7 @@ describe('deepgram adapter', () => {
 					encoding: 'pcm_s16le',
 					sampleRateHz: 16000
 				},
-				lexicon: Array.from({ length: 32 }, (_, index) => ({
+				lexicon: Array.from({ length: 300 }, (_, index) => ({
 					text:
 						index === 0
 							? 'complain कर लो'
@@ -308,7 +308,17 @@ describe('deepgram adapter', () => {
 			const url = new URL(MockWebSocket.lastInstance!.url);
 			const keyterms = url.searchParams.getAll('keyterm');
 
-			expect(keyterms.length).toBeLessThanOrEqual(16);
+			// An oversized dictionary is admitted up to Deepgram's 500-token-per-
+			// request ceiling (not an arbitrary fixed count): far more than the old
+			// 16, while total estimated tokens stay safely under the budget.
+			const estimatedTokens = keyterms.reduce(
+				(sum, term) =>
+					sum + Math.max(1, Math.ceil(term.trim().length / 4)),
+				0
+			);
+			expect(keyterms.length).toBeGreaterThan(16);
+			expect(estimatedTokens).toBeLessThanOrEqual(450);
+			// Highest-relevance terms (multi-script, multi-word) survive the budget.
 			expect(keyterms).toContain('complain कर लो');
 			expect(keyterms).toContain('future opportunities');
 		} finally {

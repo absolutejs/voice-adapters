@@ -236,8 +236,19 @@ const normalizeKeyterms = (
 ) =>
 	value === undefined ? [] : Array.isArray(value) ? value : [value];
 
-const MAX_KEYTERM_COUNT = 16;
+// Deepgram caps keyterm prompting at 500 tokens PER REQUEST — shared across
+// Nova-3 monolingual, Nova-3 multilingual, and Flux
+// (https://developers.deepgram.com/docs/keyterm). There is no per-keyterm count
+// limit; the only ceiling is total tokens. So rather than an arbitrarily small
+// fixed count, we admit as many relevance-ranked terms as fit under a token
+// budget (with a safety margin below 500). Tokens are estimated at ~4 chars/token
+// — Deepgram's own guidance ("500 tokens ≈ 100 words") is the same ballpark. A
+// generous hard count cap stays as a backstop against pathological inputs.
+const MAX_KEYTERM_TOKEN_BUDGET = 450;
+const MAX_KEYTERM_COUNT = 200;
 const MAX_KEYTERM_LENGTH = 48;
+const estimateKeytermTokens = (term: string) =>
+	Math.max(1, Math.ceil(term.trim().length / 4));
 
 const countScripts = (value: string) => {
 	const scripts = new Set<string>();
@@ -261,13 +272,33 @@ const scoreKeytermCandidate = (value: string) => {
 	);
 };
 
-const selectKeyterms = (terms: string[]) =>
-	terms
+const selectKeyterms = (terms: string[]) => {
+	const ranked = terms
 		.map((term) => term.trim())
 		.filter((term) => term.length >= 2 && term.length <= MAX_KEYTERM_LENGTH)
 		.filter((term, index, list) => list.indexOf(term) === index)
-		.sort((left, right) => scoreKeytermCandidate(right) - scoreKeytermCandidate(left))
-		.slice(0, MAX_KEYTERM_COUNT);
+		.sort(
+			(left, right) =>
+				scoreKeytermCandidate(right) - scoreKeytermCandidate(left)
+		);
+	// Greedily admit the highest-scored terms while staying under Deepgram's
+	// per-request token ceiling, so a large dictionary is honored in full instead
+	// of being truncated to a handful.
+	const selected: string[] = [];
+	let tokenBudget = MAX_KEYTERM_TOKEN_BUDGET;
+	for (const term of ranked) {
+		if (selected.length >= MAX_KEYTERM_COUNT) {
+			break;
+		}
+		const cost = estimateKeytermTokens(term);
+		if (cost > tokenBudget) {
+			continue;
+		}
+		selected.push(term);
+		tokenBudget -= cost;
+	}
+	return selected;
+};
 
 const formatErrorMessage = (details: DeepgramErrorDetails): string => {
 	const parts = [
