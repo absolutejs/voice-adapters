@@ -236,16 +236,16 @@ const normalizeKeyterms = (
 ) =>
 	value === undefined ? [] : Array.isArray(value) ? value : [value];
 
-// Deepgram caps keyterm prompting at 500 tokens PER REQUEST — shared across
-// Nova-3 monolingual, Nova-3 multilingual, and Flux
-// (https://developers.deepgram.com/docs/keyterm). There is no per-keyterm count
-// limit; the only ceiling is total tokens. So rather than an arbitrarily small
-// fixed count, we admit as many relevance-ranked terms as fit under a token
-// budget (with a safety margin below 500). Tokens are estimated at ~4 chars/token
-// — Deepgram's own guidance ("500 tokens ≈ 100 words") is the same ballpark. A
-// generous hard count cap stays as a backstop against pathological inputs.
+// Deepgram caps keyterm prompting at 500 tokens PER REQUEST
+// (https://developers.deepgram.com/docs/keyterm), but there is ALSO a practical
+// per-request COUNT ceiling: the streaming (Flux) connection's open handshake
+// stalls when too many keyterms ride in the query string — empirically the open
+// never completes past ~50 terms (≈100 worked-then-hung; 40 is healthy), and
+// Deepgram's own guidance is "the most important 20-50 terms". So we cap on BOTH
+// a token budget (the documented hard limit) and a count well inside the safe
+// zone. Relevance-ranked, so the highest-value terms survive the cap.
 const MAX_KEYTERM_TOKEN_BUDGET = 450;
-const MAX_KEYTERM_COUNT = 200;
+const MAX_KEYTERM_COUNT = 48;
 const MAX_KEYTERM_LENGTH = 48;
 const estimateKeytermTokens = (term: string) =>
 	Math.max(1, Math.ceil(term.trim().length / 4));
