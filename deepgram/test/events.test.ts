@@ -227,4 +227,44 @@ describe('deepgram adapter', () => {
 			expect(ends).toHaveLength(1);
 		});
 	});
+
+	// Regression: Flux (v2/listen) idle-drops the socket on silence just like
+	// nova. KeepAlive used to be skipped for flux, which closed live intake calls
+	// with code=INACTIVE_CLIENT and zero turns. KeepAlive must fire for EVERY
+	// model now (opt out only with keepAliveMs:0).
+	test('sends KeepAlive for every model including Flux', async () => {
+		const original = globalThis.WebSocket;
+		try {
+			globalThis.WebSocket = MockWebSocket as never;
+			for (const model of ['flux-general-multi', 'nova-3']) {
+				MockWebSocket.reset();
+				const session = await deepgram({
+					apiKey: 'test-key',
+					keepAliveMs: 15,
+					model
+				}).open({
+					format: {
+						channels: 1,
+						container: 'raw',
+						encoding: 'pcm_s16le',
+						sampleRateHz: 16000
+					},
+					sessionId: `dg-keepalive-${model}`
+				});
+				const socket = MockWebSocket.lastInstance;
+				if (!socket) {
+					throw new Error('Mock WebSocket was not created.');
+				}
+				await Bun.sleep(50);
+				const keepAlives = socket.sent.filter(
+					(payload) =>
+						typeof payload === 'string' && payload.includes('KeepAlive')
+				);
+				expect(keepAlives.length).toBeGreaterThan(0);
+				await session.close('unit-test');
+			}
+		} finally {
+			globalThis.WebSocket = original;
+		}
+	});
 });

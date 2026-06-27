@@ -747,7 +747,14 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 
 				opened = true;
 				clearOpenTimeout();
-				const keepAliveEnabled = !String(config.model).startsWith('flux');
+				// Flux (v2/listen) idle-drops the socket on caller silence the SAME
+				// way nova does: with no KeepAlive, Deepgram stops pinging and the
+				// client errors with code=INACTIVE_CLIENT, ending the intake call
+				// with zero turns (the dominant cause of dropped intakes). KeepAlive
+				// is a valid v2 control message, so run it for EVERY model; opt out
+				// only with keepAliveMs:0. (The old `!startsWith('flux')` gate was
+				// the bug.)
+				const keepAliveEnabled = config.keepAliveMs !== 0;
 
 				while (pendingAudio.length > 0) {
 					const next = pendingAudio.shift();
