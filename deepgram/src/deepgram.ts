@@ -693,6 +693,12 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 		);
 		const connectTimeoutMs = config.connectTimeoutMs ?? 8_000;
 			const keepAliveMs = config.keepAliveMs ?? 4000;
+				// ~100ms of linear16 silence, sent to keep a Flux (v2) socket warm
+				// during caller silence (Flux rejects the KeepAlive control message).
+				const silenceKeepAliveFrame = new Uint8Array(
+					Math.max(2, Math.round(runtimeOptions.format.sampleRateHz * 0.1) * 2)
+				);
+				let lastRealAudioAt = 0;
 			const pendingAudio: Array<ArrayBuffer | ArrayBufferView> = [];
 			const deduper = createSignalDeduper();
 			let keepAliveTimer: ReturnType<typeof setInterval> | null = null;
@@ -747,19 +753,20 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 
 				opened = true;
 				clearOpenTimeout();
-				// Flux (v2/listen) idle-drops the socket on caller silence the SAME
-				// way nova does: with no KeepAlive, Deepgram stops pinging and the
-				// client errors with code=INACTIVE_CLIENT, ending the intake call
-				// with zero turns (the dominant cause of dropped intakes). KeepAlive
-				// is a valid v2 control message, so run it for EVERY model; opt out
-				// only with keepAliveMs:0. (The old `!startsWith('flux')` gate was
-				// the bug.)
+				// Keep the STT socket alive across caller silence so Deepgram doesn't
+				// idle-close it (code=INACTIVE_CLIENT) and strand the call with zero
+				// turns. nova (v1) accepts the KeepAlive control message; Flux (v2)
+				// REJECTS it ("unknown variant `KeepAlive`"), so Flux is kept warm with
+				// short SILENCE audio frames instead — gated on real-audio inactivity
+				// so they never interleave with live speech (which would corrupt
+				// transcription / EOT). Opt out entirely with keepAliveMs:0.
 				const keepAliveEnabled = config.keepAliveMs !== 0;
 
 				while (pendingAudio.length > 0) {
 					const next = pendingAudio.shift();
 					if (next) {
 						connection.send(next);
+						lastRealAudioAt = Date.now();
 					}
 				}
 
@@ -772,6 +779,15 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 				keepAliveTimer = setInterval(() => {
 					if (connection.readyState !== openReadyState) {
 						clearKeepAlive();
+						return;
+					}
+
+					if (emitsNativeEndOfTurn) {
+						// Flux: only inject silence when no real audio flowed this
+						// interval, so live caller speech is never corrupted.
+						if (Date.now() - lastRealAudioAt >= keepAliveMs) {
+							connection.send(silenceKeepAliveFrame);
+						}
 						return;
 					}
 
@@ -1025,6 +1041,7 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 
 				if (opened && connection.readyState === WebSocket.OPEN) {
 					connection.send(audio);
+					lastRealAudioAt = Date.now();
 					return;
 				}
 

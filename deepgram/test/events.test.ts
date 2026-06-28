@@ -228,41 +228,61 @@ describe('deepgram adapter', () => {
 		});
 	});
 
-	// Regression: Flux (v2/listen) idle-drops the socket on silence just like
-	// nova. KeepAlive used to be skipped for flux, which closed live intake calls
-	// with code=INACTIVE_CLIENT and zero turns. KeepAlive must fire for EVERY
-	// model now (opt out only with keepAliveMs:0).
-	test('sends KeepAlive for every model including Flux', async () => {
+	// Regression: both model families idle-drop the socket on silence
+	// (code=INACTIVE_CLIENT → zero-turn call). nova (v1) accepts the KeepAlive
+	// CONTROL message; Flux (v2) REJECTS it ("unknown variant `KeepAlive`"), so
+	// Flux must instead be kept warm with binary SILENCE frames — and must NEVER
+	// be sent the KeepAlive message.
+	const openIdleSession = async (model: string) => {
+		MockWebSocket.reset();
+		const session = await deepgram({
+			apiKey: 'test-key',
+			keepAliveMs: 15,
+			model
+		}).open({
+			format: {
+				channels: 1,
+				container: 'raw',
+				encoding: 'pcm_s16le',
+				sampleRateHz: 16000
+			},
+			sessionId: `dg-keepalive-${model}`
+		});
+		const socket = MockWebSocket.lastInstance;
+		if (!socket) {
+			throw new Error('Mock WebSocket was not created.');
+		}
+		await Bun.sleep(60);
+		const keepAliveMessages = socket.sent.filter(
+			(payload) => typeof payload === 'string' && payload.includes('KeepAlive')
+		);
+		const binaryFrames = socket.sent.filter(
+			(payload) => payload instanceof Uint8Array
+		);
+		await session.close('unit-test');
+
+		return { binaryFrames, keepAliveMessages };
+	};
+
+	test('nova keeps the socket alive with the KeepAlive control message', async () => {
 		const original = globalThis.WebSocket;
 		try {
 			globalThis.WebSocket = MockWebSocket as never;
-			for (const model of ['flux-general-multi', 'nova-3']) {
-				MockWebSocket.reset();
-				const session = await deepgram({
-					apiKey: 'test-key',
-					keepAliveMs: 15,
-					model
-				}).open({
-					format: {
-						channels: 1,
-						container: 'raw',
-						encoding: 'pcm_s16le',
-						sampleRateHz: 16000
-					},
-					sessionId: `dg-keepalive-${model}`
-				});
-				const socket = MockWebSocket.lastInstance;
-				if (!socket) {
-					throw new Error('Mock WebSocket was not created.');
-				}
-				await Bun.sleep(50);
-				const keepAlives = socket.sent.filter(
-					(payload) =>
-						typeof payload === 'string' && payload.includes('KeepAlive')
-				);
-				expect(keepAlives.length).toBeGreaterThan(0);
-				await session.close('unit-test');
-			}
+			const { keepAliveMessages } = await openIdleSession('nova-3');
+			expect(keepAliveMessages.length).toBeGreaterThan(0);
+		} finally {
+			globalThis.WebSocket = original;
+		}
+	});
+
+	test('Flux keeps the socket alive with silence frames, never KeepAlive', async () => {
+		const original = globalThis.WebSocket;
+		try {
+			globalThis.WebSocket = MockWebSocket as never;
+			const { binaryFrames, keepAliveMessages } =
+				await openIdleSession('flux-general-multi');
+			expect(keepAliveMessages).toHaveLength(0);
+			expect(binaryFrames.length).toBeGreaterThan(0);
 		} finally {
 			globalThis.WebSocket = original;
 		}
