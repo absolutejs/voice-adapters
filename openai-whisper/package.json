@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-openai-whisper",
-	"version": "0.0.1-beta.2",
+	"version": "0.0.1-beta.3",
 	"description": "OpenAI Whisper buffered-batch speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

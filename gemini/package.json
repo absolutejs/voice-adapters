@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-gemini",
-	"version": "0.0.1-beta.41",
+	"version": "0.0.1-beta.42",
 	"description": "Gemini Live realtime adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

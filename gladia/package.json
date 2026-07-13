@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-gladia",
-	"version": "0.0.1-beta.2",
+	"version": "0.0.1-beta.3",
 	"description": "Gladia real-time speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

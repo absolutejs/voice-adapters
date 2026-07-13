@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-neets",
-	"version": "0.0.1-beta.3",
+	"version": "0.0.1-beta.4",
 	"description": "Neets text-to-speech adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

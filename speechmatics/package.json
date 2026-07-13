@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-speechmatics",
-	"version": "0.0.1-beta.2",
+	"version": "0.0.1-beta.3",
 	"description": "Speechmatics real-time speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

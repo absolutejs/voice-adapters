@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-assemblyai",
-	"version": "0.0.19-beta.124",
+	"version": "0.0.19-beta.125",
 	"description": "AssemblyAI speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",

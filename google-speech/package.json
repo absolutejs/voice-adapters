@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-google-speech",
-	"version": "0.0.1-beta.3",
+	"version": "0.0.1-beta.4",
 	"description": "Google Cloud Speech-to-Text adapter for @absolutejs/voice — buffered-batch (REST) + real-time streaming (gRPC-Web over HTTP/2, no @grpc/grpc-js dep)",
 	"repository": {
 		"type": "git",
