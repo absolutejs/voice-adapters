@@ -52,8 +52,13 @@ type DeepgramResultsMessage = {
 			confidence?: number;
 			transcript?: string;
 			words?: Array<{
+				confidence?: number;
 				end?: number;
+				language?: string;
+				punctuated_word?: string;
+				speaker?: number;
 				start?: number;
+				word?: string;
 			}>;
 		}>;
 	};
@@ -74,6 +79,10 @@ type DeepgramFluxTurnInfoMessage = {
 	type?: 'TurnInfo';
 	words?: Array<{
 		confidence?: number;
+		end?: number;
+		language?: string;
+		speaker?: number;
+		start?: number;
 		word?: string;
 	}>;
 };
@@ -343,9 +352,13 @@ const emit = async <K extends keyof STTSessionEventMap>(
 const normalizeWords = (
 	words:
 		| Array<{
+				confidence?: number;
 				end?: number;
+				language?: string;
+				punctuated_word?: string;
 				speaker?: number;
 				start?: number;
+				word?: string;
 		  }>
 		| undefined
 ) => {
@@ -366,6 +379,30 @@ const normalizeWords = (
 	}
 
 	const speaker = [...speakerCounts.entries()].sort((left, right) => right[1] - left[1])[0]?.[0];
+	const normalizedWords = words.flatMap((word) =>
+		typeof word.word === 'string' && word.word.trim()
+			? [
+					{
+						confidence:
+							typeof word.confidence === 'number'
+								? word.confidence
+								: undefined,
+						endedAtMs:
+							typeof word.end === 'number'
+								? Math.round(word.end * 1000)
+								: undefined,
+						language: word.language,
+						punctuatedText: word.punctuated_word,
+						speaker: word.speaker,
+						startedAtMs:
+							typeof word.start === 'number'
+								? Math.round(word.start * 1000)
+								: undefined,
+						text: word.word
+					}
+			  ]
+			: []
+	);
 
 	return {
 		endedAtMs:
@@ -374,7 +411,8 @@ const normalizeWords = (
 		startedAtMs:
 			typeof first?.start === 'number'
 				? Math.round(first.start * 1000)
-				: undefined
+				: undefined,
+		words: normalizedWords.length > 0 ? normalizedWords : undefined
 	};
 };
 
@@ -418,6 +456,7 @@ const buildFluxTranscript = (
 			: payload.end_of_turn_confidence;
 
 	return {
+		...normalizeWords(payload.words),
 		confidence,
 		endedAtMs:
 			typeof payload.audio_window_end === 'number'

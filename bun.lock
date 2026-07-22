@@ -49,10 +49,10 @@
     },
     "deepgram": {
       "name": "@absolutejs/voice-deepgram",
-      "version": "0.0.20-beta.99",
+      "version": "0.0.20-beta.101",
       "dependencies": {
         "@absolutejs/manifest": "^0.1.0",
-        "@absolutejs/voice": "0.0.22-beta.474",
+        "@absolutejs/voice": "0.0.22-beta.634",
         "@sinclair/typebox": "^0.34.0",
       },
       "devDependencies": {
@@ -347,6 +347,8 @@
     "@absolutejs/voice-cartesia/@absolutejs/voice": ["@absolutejs/voice@0.0.22-beta.476", "", { "dependencies": { "@absolutejs/media": "0.0.1-beta.16" }, "peerDependencies": { "@absolutejs/absolute": ">=0.19.0-beta.646", "@absolutejs/ai": ">=0.0.5", "@angular/core": ">=21.0.0", "elysia": ">=1.4.18", "react": ">=19.0.0", "vue": ">=3.5.0" }, "optionalPeers": ["@absolutejs/ai", "@angular/core", "react", "vue"] }, "sha512-aAeIszOsRf+uMdQM/T1ZfHTbgUJq0+YigjU2Hq7G+pLw/bQDwKcncDLA0SxAnLJGoEHHoq5XeVRDdGs8dFw3bQ=="],
 
     "@absolutejs/voice-deepgram/@absolutejs/absolute": ["@absolutejs/absolute@0.19.0-beta.648", "", { "dependencies": { "@angular/compiler": "^21.0.0", "zustand": "^5.0.12" }, "optionalDependencies": { "@absolutejs/native-darwin-arm64": "0.19.0-beta.648", "@absolutejs/native-darwin-x64": "0.19.0-beta.648", "@absolutejs/native-linux-arm64": "0.19.0-beta.648", "@absolutejs/native-linux-x64": "0.19.0-beta.648", "@absolutejs/native-windows-arm64": "0.19.0-beta.648", "@absolutejs/native-windows-x64": "0.19.0-beta.648" }, "peerDependencies": { "@angular/common": "^21.0.0", "@angular/compiler-cli": "^21.0.0", "@angular/core": "^21.0.0", "@angular/platform-browser": "^21.0.0", "@angular/platform-server": "^21.0.0", "@angular/ssr": "^21.0.0", "elysia": "^1.4.0", "react": "^19.2.0", "react-dom": "^19.2.0", "react-refresh": "^0.18.0", "sharp": ">=0.33.0", "svelte": "^5.35.2", "vue": "^3.5.27", "zone.js": "^0.15.0" }, "optionalPeers": ["@angular/common", "@angular/compiler-cli", "@angular/core", "@angular/platform-browser", "@angular/platform-server", "@angular/ssr", "react", "react-dom", "react-refresh", "sharp", "svelte", "vue", "zone.js"], "bin": { "absolute": "dist/cli/index.js" } }, "sha512-pZNHUYKdlNaxYOyAzBLplv0nJHMuan/ujzI0JZnCe9juE8Av2ceUEjnlSHk00qPvZZ/95NfzUqgt5tBkJCZUaQ=="],
+
+    "@absolutejs/voice-deepgram/@absolutejs/voice": ["@absolutejs/voice@0.0.22-beta.634", "", { "dependencies": { "@absolutejs/manifest": "^0.1.0", "@absolutejs/media": "0.0.1-beta.19", "@sinclair/typebox": "^0.34.0" }, "peerDependencies": { "@absolutejs/absolute": ">=0.19.0-beta.646", "@absolutejs/ai": ">=0.0.5", "@angular/core": ">=21.0.0", "drizzle-orm": ">=1.0.0-rc.1", "elysia": ">=1.4.18", "react": ">=19.0.0", "vue": ">=3.5.0" }, "optionalPeers": ["@absolutejs/ai", "@angular/core", "drizzle-orm", "react", "vue"] }, "sha512-Vd1lcJnTOSPPsN2WdvqmT4QzINUheKzq2mMAiBnrXhxkO/mKJ0I7qyIiGr+KcnYzwuL8X1fV+lQBjbOeuigCIw=="],
 
     "@absolutejs/voice-elevenlabs/@absolutejs/voice": ["@absolutejs/voice@0.0.22-beta.476", "", { "dependencies": { "@absolutejs/media": "0.0.1-beta.16" }, "peerDependencies": { "@absolutejs/absolute": ">=0.19.0-beta.646", "@absolutejs/ai": ">=0.0.5", "@angular/core": ">=21.0.0", "elysia": ">=1.4.18", "react": ">=19.0.0", "vue": ">=3.5.0" }, "optionalPeers": ["@absolutejs/ai", "@angular/core", "react", "vue"] }, "sha512-aAeIszOsRf+uMdQM/T1ZfHTbgUJq0+YigjU2Hq7G+pLw/bQDwKcncDLA0SxAnLJGoEHHoq5XeVRDdGs8dFw3bQ=="],
 

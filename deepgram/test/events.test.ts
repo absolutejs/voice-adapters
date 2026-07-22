@@ -198,11 +198,11 @@ describe('deepgram adapter', () => {
 
 	test('deduplicates duplicate Flux end-of-turn events', async () => {
 		await withDeepgramSession('flux-general-en', async (session, socket) => {
-			const finals: Array<unknown> = [];
+			const finals: Array<{ transcript: { [key: string]: unknown } }> = [];
 			const ends: Array<unknown> = [];
 
-			session.on('final', () => {
-				finals.push(1);
+			session.on('final', (event) => {
+				finals.push(event);
 			});
 			session.on('endOfTurn', () => {
 				ends.push(1);
@@ -216,7 +216,12 @@ describe('deepgram adapter', () => {
 				request_id: 'request-id',
 				sequence_id: 7,
 				transcript: 'I am testing this feature',
-				type: 'TurnInfo'
+				type: 'TurnInfo',
+				words: [
+					{ confidence: 0.999, end: 0.61, start: 0.4, word: 'I' },
+					{ confidence: 0.51, end: 0.89, start: 0.62, word: 'am' },
+					{ confidence: 0.98, end: 1.02, start: 0.9, word: 'testing' }
+				]
 			};
 
 			socket.emitMessage(message);
@@ -225,6 +230,36 @@ describe('deepgram adapter', () => {
 
 			expect(finals).toHaveLength(1);
 			expect(ends).toHaveLength(1);
+			expect(finals[0]?.transcript.confidence).toBeCloseTo(0.829667);
+			expect(finals[0]?.transcript.words).toEqual([
+				{
+					confidence: 0.999,
+					endedAtMs: 610,
+					language: undefined,
+					punctuatedText: undefined,
+					speaker: undefined,
+					startedAtMs: 400,
+					text: 'I'
+				},
+				{
+					confidence: 0.51,
+					endedAtMs: 890,
+					language: undefined,
+					punctuatedText: undefined,
+					speaker: undefined,
+					startedAtMs: 620,
+					text: 'am'
+				},
+				{
+					confidence: 0.98,
+					endedAtMs: 1020,
+					language: undefined,
+					punctuatedText: undefined,
+					speaker: undefined,
+					startedAtMs: 900,
+					text: 'testing'
+				}
+			]);
 		});
 	});
 
