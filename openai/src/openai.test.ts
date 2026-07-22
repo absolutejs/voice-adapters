@@ -135,6 +135,49 @@ const withOpenAIRealtimeSession = async (
 };
 
 describe('openai adapter', () => {
+	test('requests and preserves input transcription log probabilities', async () => {
+		await withOpenAIRealtimeSession(undefined, async (session, socket) => {
+			const finalEvents: Array<{ transcript: { confidence?: number; tokens?: unknown[] } }> = [];
+			session.on('final', (event) => {
+				finalEvents.push(event);
+			});
+
+			const update = socket.sent
+				.map((entry) => JSON.parse(entry))
+				.find((entry) => entry.type === 'session.update');
+			expect(update.session.include).toEqual([
+				'item.input_audio_transcription.logprobs'
+			]);
+
+			socket.emitMessage({
+				type: 'conversation.item.input_audio_transcription.completed',
+				item_id: 'item-logprobs',
+				transcript: 'OnSpark',
+				logprobs: [
+					{ token: 'On', logprob: Math.log(0.8), bytes: [79, 110] },
+					{ token: 'Spark', logprob: Math.log(0.6) }
+				]
+			});
+
+			expect(finalEvents).toHaveLength(1);
+			expect(finalEvents[0]?.transcript.confidence).toBeCloseTo(0.7);
+			expect(finalEvents[0]?.transcript.tokens).toEqual([
+				{
+					bytes: [79, 110],
+					confidence: 0.8,
+					logProbability: Math.log(0.8),
+					text: 'On'
+				},
+				{
+					bytes: undefined,
+					confidence: 0.6,
+					logProbability: Math.log(0.6),
+					text: 'Spark'
+				}
+			]);
+		});
+	});
+
 	test('deduplicates input audio completion turns', async () => {
 		await withOpenAIRealtimeSession(undefined, async (session, socket) => {
 			const finalEvents: Array<unknown> = [];

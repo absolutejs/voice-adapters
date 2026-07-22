@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-openai",
-	"version": "0.0.7-beta.42",
+	"version": "0.0.7-beta.43",
 	"description": "OpenAI realtime adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
@@ -39,7 +39,7 @@
 	},
 	"dependencies": {
 		"@absolutejs/manifest": "^0.1.0",
-		"@absolutejs/voice": "0.0.22-beta.474",
+		"@absolutejs/voice": "0.0.22-beta.636",
 		"@sinclair/typebox": "^0.34.0"
 	},
 	"devDependencies": {

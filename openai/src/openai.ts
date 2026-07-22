@@ -70,6 +70,12 @@ type OpenAIClientEvent = {
 	[key: string]: unknown;
 };
 
+type OpenAITranscriptionLogprob = {
+	bytes?: number[];
+	logprob?: number;
+	token?: string;
+};
+
 const REALTIME_URL = 'wss://api.openai.com/v1/realtime';
 const OUTPUT_AUDIO_FORMAT: AudioFormat = {
 	channels: 1,
@@ -156,13 +162,41 @@ const buildTextTranscript = (text: string): Transcript => ({
 const buildAudioTranscript = (
 	itemId: string,
 	text: string,
-	isFinal: boolean
-): Transcript => ({
-	id: itemId,
-	isFinal,
-	text,
-	vendor: 'openai'
-});
+	isFinal: boolean,
+	logprobs: OpenAITranscriptionLogprob[] = []
+): Transcript => {
+	const tokens = logprobs.flatMap((entry) =>
+		typeof entry.token === 'string' && typeof entry.logprob === 'number'
+			? [{
+					bytes: Array.isArray(entry.bytes) ? entry.bytes : undefined,
+					confidence: Math.max(0, Math.min(1, Math.exp(entry.logprob))),
+					logProbability: entry.logprob,
+					text: entry.token
+			  }]
+			: []
+	);
+	const confidence = tokens.length > 0
+		? tokens.reduce((sum, token) => sum + token.confidence, 0) / tokens.length
+		: undefined;
+
+	return {
+		confidence,
+		id: itemId,
+		isFinal,
+		text,
+		tokens: tokens.length > 0 ? tokens : undefined,
+		vendor: 'openai'
+	};
+};
+
+const readTranscriptionLogprobs = (
+	value: unknown
+): OpenAITranscriptionLogprob[] =>
+	Array.isArray(value)
+		? value.filter((entry): entry is OpenAITranscriptionLogprob =>
+				typeof entry === 'object' && entry !== null
+		  )
+		: [];
 
 const resolveReadyError = (context: string) =>
 	new Error(`OpenAI realtime session ${context} before it became ready`);
@@ -221,7 +255,12 @@ const buildPrimarySessionUpdate = (
 
 	return {
 		event_id: `session-update-primary-${crypto.randomUUID()}`,
-		session: omitUndefined({
+			session: omitUndefined({
+			include:
+				config.inputTranscriptionModel !== null &&
+				config.inputTranscriptionLogprobs !== false
+					? ['item.input_audio_transcription.logprobs']
+					: undefined,
 			audio: {
 				input: omitUndefined({
 					format: {
@@ -366,6 +405,7 @@ export const openai = (
 				} as never
 			);
 			const transcriptBuffers = new Map<string, string>();
+			const transcriptLogprobs = new Map<string, OpenAITranscriptionLogprob[]>();
 			const committedTranscripts = new Map<string, string>();
 			const pendingMessages: Array<string | ArrayBufferView | ArrayBuffer> = [];
 		const autoCommitSilenceMs =
@@ -621,9 +661,21 @@ export const openai = (
 
 						const text = (transcriptBuffers.get(itemId) ?? '') + delta;
 						transcriptBuffers.set(itemId, text);
+						const deltaLogprobs = readTranscriptionLogprobs(payload.logprobs);
+						if (deltaLogprobs.length > 0) {
+							transcriptLogprobs.set(itemId, [
+								...(transcriptLogprobs.get(itemId) ?? []),
+								...deltaLogprobs
+							]);
+						}
 						void emit(listeners, 'partial', {
 							receivedAt: Date.now(),
-							transcript: buildAudioTranscript(itemId, text, false),
+							transcript: buildAudioTranscript(
+								itemId,
+								text,
+								false,
+								transcriptLogprobs.get(itemId)
+							),
 							type: 'partial'
 						});
 						return;
@@ -648,9 +700,18 @@ export const openai = (
 
 								committedTranscripts.set(itemId, transcript);
 								transcriptBuffers.set(itemId, transcript);
+								const completedLogprobs = readTranscriptionLogprobs(payload.logprobs);
+								if (completedLogprobs.length > 0) {
+									transcriptLogprobs.set(itemId, completedLogprobs);
+								}
 								void emit(listeners, 'final', {
 									receivedAt: Date.now(),
-									transcript: buildAudioTranscript(itemId, transcript, true),
+									transcript: buildAudioTranscript(
+										itemId,
+										transcript,
+										true,
+										transcriptLogprobs.get(itemId)
+									),
 									type: 'final'
 								});
 						void emit(listeners, 'endOfTurn', {

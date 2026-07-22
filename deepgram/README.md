@@ -1,5 +1,10 @@
 # `@absolutejs/voice-deepgram`
 
+Flux sessions implement the provider-neutral `session.configure(...)` contract,
+allowing keyterms and language hints to be refreshed during a live stream. Nova
+sessions keep their opening configuration because Deepgram's Configure control
+message is a Flux capability.
+
 Deepgram speech-to-text adapter for `@absolutejs/voice`.
 
 ## Install

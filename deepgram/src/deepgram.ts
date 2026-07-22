@@ -40,6 +40,12 @@ type DeepgramAdapterOpenOptions = STTAdapterOpenOptions & {
 	phraseHints?: VoicePhraseHintCompat[];
 };
 
+type VoiceSTTSessionConfigurationCompat = {
+	languageHints?: string[];
+	lexicon?: VoiceLexiconEntryCompat[];
+	phraseHints?: VoicePhraseHintCompat[];
+};
+
 type ListenerMap = {
 	[K in keyof STTSessionEventMap]: Set<
 		(payload: STTSessionEventMap[K]) => void | Promise<void>
@@ -1065,6 +1071,41 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
 					connection.send(JSON.stringify({ type: 'CloseStream' }));
 					connection.close(1000, 'closed');
 				}
+			},
+			configure: async (configuration: VoiceSTTSessionConfigurationCompat) => {
+				// Deepgram's Configure control message is a Flux (v2) capability.
+				// Nova streams retain their opening configuration until reconnect.
+				if (
+					!emitsNativeEndOfTurn ||
+					closed ||
+					connection.readyState !== openReadyState
+				) {
+					return;
+				}
+
+				const keyterms = selectKeyterms([
+					...(configuration.phraseHints ?? []).flatMap((hint) => [
+						hint.text,
+						...(hint.aliases ?? [])
+					]),
+					...(configuration.lexicon ?? []).flatMap((entry) => [
+						entry.text,
+						...(entry.aliases ?? [])
+					])
+				]);
+				const languageHints = (configuration.languageHints ?? [])
+					.map((language) => language.trim())
+					.filter((language, index, values) =>
+						language.length > 0 && values.indexOf(language) === index
+					);
+
+				connection.send(JSON.stringify({
+					...(keyterms.length > 0 ? { keyterms } : {}),
+					...(languageHints.length > 0
+						? { language_hints: languageHints }
+						: {}),
+					type: 'Configure'
+				}));
 			},
 			on: (event, handler) => {
 				listeners[event].add(handler as never);

@@ -1,5 +1,10 @@
 # `@absolutejs/voice-openai`
 
+Input transcription log probabilities are requested by default and normalized
+as `Transcript.tokens`, with aggregate transcript confidence available for
+provider-neutral routing and calibration. Set `inputTranscriptionLogprobs: false`
+to omit the optional Realtime field.
+
 OpenAI realtime adapter for `@absolutejs/voice`.
 
 ## Install

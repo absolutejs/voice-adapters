@@ -263,6 +263,27 @@ describe('deepgram adapter', () => {
 		});
 	});
 
+	test('updates Flux keyterms and language hints without reconnecting', async () => {
+		await withDeepgramSession('flux-general-multi', async (session, socket) => {
+			await session.configure?.({
+				languageHints: ['en', 'es', 'en'],
+				lexicon: [{ text: 'OnSpark', aliases: ['on spark'] }],
+				phraseHints: [{ text: 'AbsoluteJS' }]
+			});
+
+			const configure = socket.sent
+				.filter((entry): entry is string => typeof entry === 'string')
+				.map((entry) => JSON.parse(entry))
+				.find((entry) => entry.type === 'Configure');
+
+			expect(configure).toEqual({
+				keyterms: ['on spark', 'AbsoluteJS', 'OnSpark'],
+				language_hints: ['en', 'es'],
+				type: 'Configure'
+			});
+		});
+	});
+
 	// Regression: both model families idle-drop the socket on silence
 	// (code=INACTIVE_CLIENT → zero-turn call). nova (v1) accepts the KeepAlive
 	// CONTROL message; Flux (v2) REJECTS it ("unknown variant `KeepAlive`"), so

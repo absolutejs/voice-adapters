@@ -52,6 +52,9 @@ export type OpenAIRealtimeAdapterOptions = {
 	inputTranscriptionModel?: OpenAIInputTranscriptionModel | null;
 	inputTranscriptionLanguage?: string;
 	inputTranscriptionPrompt?: string;
+	/** Request token log probabilities so routing and calibration can distinguish
+	 * uncertain input without treating subword tokens as timestamped words. */
+	inputTranscriptionLogprobs?: boolean;
 	maxOutputTokens?: number | 'inf';
 	autoCommitSilenceMs?: number;
 	noiseReduction?: OpenAINoiseReduction;
