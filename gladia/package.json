@@ -1,6 +1,6 @@
 {
 	"name": "@absolutejs/voice-gladia",
-	"version": "0.0.1-beta.3",
+	"version": "0.0.1-beta.4",
 	"description": "Gladia real-time speech-to-text adapter for @absolutejs/voice",
 	"repository": {
 		"type": "git",
@@ -39,14 +39,17 @@
 	},
 	"dependencies": {
 		"@absolutejs/manifest": "^0.1.0",
-		"@absolutejs/voice": "0.0.22-beta.474",
 		"@sinclair/typebox": "^0.34.0"
 	},
 	"devDependencies": {
+		"@absolutejs/voice": "0.0.22-beta.644",
 		"@types/bun": "1.3.9",
 		"typescript": "^5.9.3"
 	},
 	"absolutejs": {
 		"manifestContract": 1
+	},
+	"peerDependencies": {
+		"@absolutejs/voice": ">=0.0.22-beta.644 <0.1"
 	}
 }
