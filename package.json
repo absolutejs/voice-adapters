@@ -24,10 +24,13 @@
   "scripts": {
     "build": "bun run --filter './*' build",
     "config": "absolute config",
+    "generate:manifests": "bun scripts/generate-manifests.ts",
+    "verify:manifests": "bun scripts/generate-manifests.ts --check",
     "test": "bun test ./test/*.test.ts && bun run --filter './*' test",
     "typecheck": "bun run --filter './*' typecheck"
   },
   "devDependencies": {
-    "@absolutejs/absolute": "^0.19.0-beta.1051"
+    "@absolutejs/absolute": "0.19.0-beta.1115",
+    "prettier": "3.9.6"
   }
 }

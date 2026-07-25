@@ -1,7 +1,7 @@
-export { smallest } from './smallest';
+export { smallest } from "./smallest";
 export type {
-	SmallestLanguage,
-	SmallestModel,
-	SmallestSampleRate,
-	SmallestTTSOptions
-} from './types';
+  SmallestLanguage,
+  SmallestModel,
+  SmallestSampleRate,
+  SmallestTTSOptions,
+} from "./types";

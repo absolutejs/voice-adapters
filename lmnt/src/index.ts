@@ -1,8 +1,8 @@
-export { lmnt } from './lmnt';
+export { lmnt } from "./lmnt";
 export type {
-	LMNTAudioFormat,
-	LMNTLanguage,
-	LMNTModel,
-	LMNTSampleRate,
-	LMNTTTSOptions
-} from './types';
+  LMNTAudioFormat,
+  LMNTLanguage,
+  LMNTModel,
+  LMNTSampleRate,
+  LMNTTTSOptions,
+} from "./types";

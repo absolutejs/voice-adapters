@@ -16,14 +16,14 @@ bun add @absolutejs/voice @absolutejs/voice-openai
 ## Setup
 
 ```ts
-import { openai } from '@absolutejs/voice-openai';
+import { openai } from "@absolutejs/voice-openai";
 
 const realtime = openai({
-	apiKey: process.env.OPENAI_API_KEY!,
-	model: 'gpt-realtime-mini',
-	voice: 'marin',
-	instructions: 'Be concise and clear.',
-	inputTranscriptionModel: 'gpt-4o-mini-transcribe'
+  apiKey: process.env.OPENAI_API_KEY!,
+  model: "gpt-realtime-mini",
+  voice: "marin",
+  instructions: "Be concise and clear.",
+  inputTranscriptionModel: "gpt-4o-mini-transcribe",
 });
 ```
 

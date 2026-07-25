@@ -23,8 +23,8 @@ const app = voice({
     apiKey: process.env.SMALLEST_API_KEY!,
     voiceId: "george",
     // optional:
-    model: "lightning",          // default; or 'lightning-v2'
-    sampleRate: 24_000,          // default
+    model: "lightning", // default; or 'lightning-v2'
+    sampleRate: 24_000, // default
     language: "en",
     speed: 1.0,
     similarity: 0.5,
@@ -36,16 +36,16 @@ const app = voice({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Smallest API key, sent as `Authorization: Bearer <key>`. |
-| `voiceId` | yes | — | Smallest voice id. |
-| `model` | no | `lightning` | Selects the URL path segment (`/api/v1/{model}/get_speech`). |
-| `sampleRate` | no | `24_000` | Forwarded as `sample_rate`. Adapter emits PCM s16le frames at this rate. |
-| `language` | no | — | `en`, `hi`. |
-| `speed`, `similarity`, `consistency`, `enhancement` | no | — | Forwarded to Smallest. |
-| `baseUrl` | no | `https://waves-api.smallest.ai` | Override for staging. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS. |
+| Option                                              | Required | Default                         | Notes                                                                    |
+| --------------------------------------------------- | -------- | ------------------------------- | ------------------------------------------------------------------------ |
+| `apiKey`                                            | yes      | —                               | Smallest API key, sent as `Authorization: Bearer <key>`.                 |
+| `voiceId`                                           | yes      | —                               | Smallest voice id.                                                       |
+| `model`                                             | no       | `lightning`                     | Selects the URL path segment (`/api/v1/{model}/get_speech`).             |
+| `sampleRate`                                        | no       | `24_000`                        | Forwarded as `sample_rate`. Adapter emits PCM s16le frames at this rate. |
+| `language`                                          | no       | —                               | `en`, `hi`.                                                              |
+| `speed`, `similarity`, `consistency`, `enhancement` | no       | —                               | Forwarded to Smallest.                                                   |
+| `baseUrl`                                           | no       | `https://waves-api.smallest.ai` | Override for staging.                                                    |
+| `fetch`                                             | no       | `globalThis.fetch`              | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS.   |
 
 ## Notes
 

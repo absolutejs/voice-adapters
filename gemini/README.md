@@ -6,8 +6,8 @@ Gemini Live realtime adapter for `@absolutejs/voice`.
 import { gemini } from "@absolutejs/voice-gemini";
 
 const realtime = gemini({
-	apiKey: process.env.GEMINI_API_KEY!,
-	model: "gemini-2.5-flash-native-audio-preview-12-2025",
+  apiKey: process.env.GEMINI_API_KEY!,
+  model: "gemini-2.5-flash-native-audio-preview-12-2025",
 });
 ```
 

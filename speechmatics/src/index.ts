@@ -1,8 +1,8 @@
-export { speechmatics } from './speechmatics';
+export { speechmatics } from "./speechmatics";
 export type {
-	SpeechmaticsAudioEncoding,
-	SpeechmaticsDiarizationMode,
-	SpeechmaticsOperatingPoint,
-	SpeechmaticsRegion,
-	SpeechmaticsSTTOptions
-} from './types';
+  SpeechmaticsAudioEncoding,
+  SpeechmaticsDiarizationMode,
+  SpeechmaticsOperatingPoint,
+  SpeechmaticsRegion,
+  SpeechmaticsSTTOptions,
+} from "./types";

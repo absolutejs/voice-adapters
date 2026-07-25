@@ -21,11 +21,11 @@ import { speechmatics } from "@absolutejs/voice-speechmatics";
 const app = voice({
   stt: speechmatics({
     apiKey: process.env.SPEECHMATICS_API_KEY!,
-    region: "eu2",                       // 'eu' | 'eu2' | 'usa'
+    region: "eu2", // 'eu' | 'eu2' | 'usa'
     language: "en",
-    operatingPoint: "enhanced",          // or 'standard' for lower latency
+    operatingPoint: "enhanced", // or 'standard' for lower latency
     enablePartials: true,
-    diarization: "speaker",              // optional
+    diarization: "speaker", // optional
   }),
   // ... tts + other options ...
 });
@@ -39,18 +39,18 @@ speechmatics({ region: "eu2", jwt: shortLivedJwt, language: "en" });
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` / `jwt` | one of | — | API key or pre-issued JWT; passed as `?jwt=<token>` on the WebSocket URL per the Speechmatics protocol. |
-| `region` | no | `eu2` | `eu`, `eu2`, `usa`, or any region prefix that resolves to `wss://{region}.rt.speechmatics.com`. |
-| `baseUrl` | no | `wss://{region}.rt.speechmatics.com` | Override for private/staging endpoints. |
-| `language` | no | `en` | BCP-47 code. Overridden when `STTAdapterOpenOptions.languageStrategy` fixes a language. |
-| `operatingPoint` | no | `enhanced` | `enhanced` (higher quality) or `standard` (lower latency). |
-| `enablePartials` | no | `true` | Stream partial hypotheses. |
-| `diarization` | no | — | `speaker`, `channel`, `channel_and_speaker`, or `none`. |
-| `maxDelay`, `speakerChangeSensitivity`, `punctuationOverrides` | no | — | Forwarded to `transcription_config`. |
-| `connectTimeoutMs` | no | `8000` | Time to wait for the `RecognitionStarted` ACK. |
-| `webSocket.factory` | no | `new WebSocket(url)` | Inject a fake socket for tests. |
+| Option                                                         | Required | Default                              | Notes                                                                                                   |
+| -------------------------------------------------------------- | -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `apiKey` / `jwt`                                               | one of   | —                                    | API key or pre-issued JWT; passed as `?jwt=<token>` on the WebSocket URL per the Speechmatics protocol. |
+| `region`                                                       | no       | `eu2`                                | `eu`, `eu2`, `usa`, or any region prefix that resolves to `wss://{region}.rt.speechmatics.com`.         |
+| `baseUrl`                                                      | no       | `wss://{region}.rt.speechmatics.com` | Override for private/staging endpoints.                                                                 |
+| `language`                                                     | no       | `en`                                 | BCP-47 code. Overridden when `STTAdapterOpenOptions.languageStrategy` fixes a language.                 |
+| `operatingPoint`                                               | no       | `enhanced`                           | `enhanced` (higher quality) or `standard` (lower latency).                                              |
+| `enablePartials`                                               | no       | `true`                               | Stream partial hypotheses.                                                                              |
+| `diarization`                                                  | no       | —                                    | `speaker`, `channel`, `channel_and_speaker`, or `none`.                                                 |
+| `maxDelay`, `speakerChangeSensitivity`, `punctuationOverrides` | no       | —                                    | Forwarded to `transcription_config`.                                                                    |
+| `connectTimeoutMs`                                             | no       | `8000`                               | Time to wait for the `RecognitionStarted` ACK.                                                          |
+| `webSocket.factory`                                            | no       | `new WebSocket(url)`                 | Inject a fake socket for tests.                                                                         |
 
 ## Notes
 

@@ -1,55 +1,71 @@
 {
-	"name": "@absolutejs/voice-elevenlabs",
-	"version": "0.0.25",
-	"description": "ElevenLabs text-to-speech adapter for @absolutejs/voice",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/absolutejs/voice-adapters.git",
-		"directory": "elevenlabs"
-	},
-	"homepage": "https://github.com/absolutejs/voice-adapters/tree/main/elevenlabs",
-	"bugs": {
-		"url": "https://github.com/absolutejs/voice-adapters/issues"
-	},
-	"files": [
-		"dist",
-		"README.md"
-	],
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
-		},
-		"./manifest": {
-			"import": "./dist/manifest.js",
-			"types": "./dist/manifest.d.ts"
-		},
-		"./manifest.json": "./dist/manifest.json"
-	},
-	"license": "Apache-2.0",
-	"author": "Alex Kahn",
-	"scripts": {
-		"build": "rm -rf dist && bun build ./src/index.ts ./src/manifest.ts --outdir dist --target bun --external @absolutejs/voice && tsc --emitDeclarationOnly --project tsconfig.json && absolute-manifest emit",
-		"format": "prettier --write \"./**/*.{js,ts,json,md}\"",
-		"release": "bun run format && bun run build && bun publish",
-		"test": "bun test",
-		"typecheck": "bun run tsc --noEmit"
-	},
-	"dependencies": {
-		"@absolutejs/manifest": "^0.1.0",
-		"@sinclair/typebox": "^0.34.0"
-	},
-	"devDependencies": {
-		"@absolutejs/voice": "0.0.22-beta.644",
-		"@types/bun": "1.3.9",
-		"typescript": "^5.9.3"
-	},
-	"absolutejs": {
-		"manifestContract": 1
-	},
-	"peerDependencies": {
-		"@absolutejs/voice": ">=0.0.22-beta.644 <0.1"
-	}
+  "name": "@absolutejs/voice-elevenlabs",
+  "version": "0.0.26",
+  "description": "ElevenLabs text-to-speech adapter for @absolutejs/voice",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/absolutejs/voice-adapters.git",
+    "directory": "elevenlabs"
+  },
+  "homepage": "https://github.com/absolutejs/voice-adapters/tree/main/elevenlabs",
+  "bugs": {
+    "url": "https://github.com/absolutejs/voice-adapters/issues"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./manifest": {
+      "import": "./dist/manifest.js",
+      "types": "./dist/manifest.d.ts"
+    },
+    "./manifest.json": "./dist/manifest.json"
+  },
+  "license": "Apache-2.0",
+  "author": "Alex Kahn",
+  "scripts": {
+    "build": "rm -rf dist && bun build ./src/index.ts ./src/manifest.ts --outdir dist --target bun --external @absolutejs/manifest --external '@absolutejs/manifest/*' --external @absolutejs/voice --external '@absolutejs/voice/*' --external @sinclair/typebox --external '@sinclair/typebox/*' && tsc --emitDeclarationOnly --project tsconfig.json && absolute-manifest emit",
+    "format": "prettier --write \"./**/*.{js,ts,json,md}\"",
+    "release": "bun run check:package && npm publish --access public",
+    "test": "bun test",
+    "typecheck": "bun run tsc --noEmit",
+    "verify-package": "absolute-manifest verify-package",
+    "check:package": "bun run format && bun run typecheck && bun run test && bun run verify-package && bun run build && bun run verify-package --artifacts"
+  },
+  "dependencies": {
+    "@absolutejs/manifest": "0.7.2",
+    "@sinclair/typebox": "0.34.52"
+  },
+  "devDependencies": {
+    "@absolutejs/voice": "0.0.22-beta.647",
+    "@types/bun": "1.3.14",
+    "elysia": "1.4.29",
+    "prettier": "3.9.6",
+    "typescript": "^5.9.3"
+  },
+  "absolutejs": {
+    "manifestContract": 2,
+    "runtimePeers": {
+      "@absolutejs/voice": {
+        "artifactImports": [],
+        "buildExternals": [
+          "@absolutejs/voice",
+          "@absolutejs/voice/*"
+        ],
+        "optional": false,
+        "range": ">=0.0.22-beta.647 <0.1",
+        "tested": "0.0.22-beta.647"
+      }
+    }
+  },
+  "peerDependencies": {
+    "@absolutejs/voice": ">=0.0.22-beta.647 <0.1"
+  }
 }

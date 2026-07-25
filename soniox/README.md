@@ -22,7 +22,7 @@ const app = voice({
   stt: soniox({
     apiKey: process.env.SONIOX_API_KEY!,
     // optional:
-    model: "stt-rt-preview",            // default
+    model: "stt-rt-preview", // default
     languageHints: ["en", "es"],
     enableLanguageIdentification: true,
     enableSpeakerDiarization: true,
@@ -45,19 +45,19 @@ soniox({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Soniox API key (sent in the start-config message body, not as a header). |
-| `model` | no | `stt-rt-preview` | Soniox real-time model id. |
-| `languageHints` | no | — | Seed list, overridden when `STTAdapterOpenOptions.languageStrategy` resolves a list. |
-| `enableLanguageIdentification` | no | — | Tag each token with the detected language. |
-| `enableSpeakerDiarization` | no | — | Tag each token with a speaker id. |
-| `enableEndpointDetection` | no | — | Surface `finished: true` end-of-utterance hints (→ `endOfTurn`). |
-| `context` | no | — | Context string passed to Soniox to bias recognition. |
-| `clientReferenceId` | no | — | Caller-defined id forwarded to Soniox for billing analytics. |
-| `baseUrl` | no | `wss://stt-rt.soniox.com` | Override for staging / enterprise endpoints. |
-| `connectTimeoutMs` | no | `8000` | WebSocket open + config timeout. |
-| `webSocket.factory` | no | `new WebSocket(url)` | Inject a fake socket for tests. |
+| Option                         | Required | Default                   | Notes                                                                                |
+| ------------------------------ | -------- | ------------------------- | ------------------------------------------------------------------------------------ |
+| `apiKey`                       | yes      | —                         | Soniox API key (sent in the start-config message body, not as a header).             |
+| `model`                        | no       | `stt-rt-preview`          | Soniox real-time model id.                                                           |
+| `languageHints`                | no       | —                         | Seed list, overridden when `STTAdapterOpenOptions.languageStrategy` resolves a list. |
+| `enableLanguageIdentification` | no       | —                         | Tag each token with the detected language.                                           |
+| `enableSpeakerDiarization`     | no       | —                         | Tag each token with a speaker id.                                                    |
+| `enableEndpointDetection`      | no       | —                         | Surface `finished: true` end-of-utterance hints (→ `endOfTurn`).                     |
+| `context`                      | no       | —                         | Context string passed to Soniox to bias recognition.                                 |
+| `clientReferenceId`            | no       | —                         | Caller-defined id forwarded to Soniox for billing analytics.                         |
+| `baseUrl`                      | no       | `wss://stt-rt.soniox.com` | Override for staging / enterprise endpoints.                                         |
+| `connectTimeoutMs`             | no       | `8000`                    | WebSocket open + config timeout.                                                     |
+| `webSocket.factory`            | no       | `new WebSocket(url)`      | Inject a fake socket for tests.                                                      |
 
 ## Notes
 

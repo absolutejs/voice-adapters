@@ -25,9 +25,9 @@ const app = voice({
     userId: process.env.PLAYHT_USER_ID!,
     voice: "s3://voice-cloning-zero-shot/.../jennifer.json",
     // optional:
-    voiceEngine: "Play3.0-mini",        // default
-    outputFormat: "raw",                 // default
-    sampleRate: 24_000,                  // default
+    voiceEngine: "Play3.0-mini", // default
+    outputFormat: "raw", // default
+    sampleRate: 24_000, // default
     language: "english",
     quality: "premium",
     speed: 1.0,
@@ -50,17 +50,17 @@ playht({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | PlayHT API key, sent as `Authorization: Bearer <key>`. |
-| `userId` | yes | — | PlayHT user id, sent as `X-USER-ID`. |
-| `voice` | yes | — | Voice id string (`s3://...json` for stock voices, or your own cloned voice id). |
-| `voiceEngine` | no | `Play3.0-mini` | `Play3.0-mini` / `PlayDialog` / `PlayHT2.0-turbo` / `PlayHT2.0`. |
-| `outputFormat` | no | `raw` | Must be `raw` (PCM s16le) or `mulaw` (telephony @ 8 kHz). `mp3`/`wav` are rejected because they aren't streamable frame-by-frame. |
-| `sampleRate` | no | `24_000` | Ignored for `mulaw` (PlayHT forces 8 kHz). |
-| `language`, `quality`, `speed`, `temperature`, `voiceGuidance` | no | — | Forwarded as-is to PlayHT. |
-| `baseUrl` | no | `https://api.play.ht` | Override for staging / enterprise hosts. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets. |
+| Option                                                         | Required | Default               | Notes                                                                                                                             |
+| -------------------------------------------------------------- | -------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`                                                       | yes      | —                     | PlayHT API key, sent as `Authorization: Bearer <key>`.                                                                            |
+| `userId`                                                       | yes      | —                     | PlayHT user id, sent as `X-USER-ID`.                                                                                              |
+| `voice`                                                        | yes      | —                     | Voice id string (`s3://...json` for stock voices, or your own cloned voice id).                                                   |
+| `voiceEngine`                                                  | no       | `Play3.0-mini`        | `Play3.0-mini` / `PlayDialog` / `PlayHT2.0-turbo` / `PlayHT2.0`.                                                                  |
+| `outputFormat`                                                 | no       | `raw`                 | Must be `raw` (PCM s16le) or `mulaw` (telephony @ 8 kHz). `mp3`/`wav` are rejected because they aren't streamable frame-by-frame. |
+| `sampleRate`                                                   | no       | `24_000`              | Ignored for `mulaw` (PlayHT forces 8 kHz).                                                                                        |
+| `language`, `quality`, `speed`, `temperature`, `voiceGuidance` | no       | —                     | Forwarded as-is to PlayHT.                                                                                                        |
+| `baseUrl`                                                      | no       | `https://api.play.ht` | Override for staging / enterprise hosts.                                                                                          |
+| `fetch`                                                        | no       | `globalThis.fetch`    | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets.                                                 |
 
 ## Notes
 

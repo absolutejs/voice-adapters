@@ -1,8 +1,8 @@
-export { playht } from './playht';
+export { playht } from "./playht";
 export type {
-	PlayHTOutputFormat,
-	PlayHTQuality,
-	PlayHTSampleRate,
-	PlayHTTTSOptions,
-	PlayHTVoiceEngine
-} from './types';
+  PlayHTOutputFormat,
+  PlayHTQuality,
+  PlayHTSampleRate,
+  PlayHTTTSOptions,
+  PlayHTVoiceEngine,
+} from "./types";

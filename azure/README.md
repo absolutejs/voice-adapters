@@ -24,7 +24,7 @@ const app = voice({
     voice: "en-US-JennyNeural",
     // optional:
     outputFormat: "raw-24khz-16bit-mono-pcm", // default
-    language: "en-US",                         // default
+    language: "en-US", // default
     voiceStyle: "cheerful",
     styleDegree: 1.5,
     prosody: { rate: "fast", pitch: "+5%" },
@@ -51,20 +51,20 @@ azureTTS({ region, token, voice });
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `subscriptionKey` / `token` | one of | — | Subscription key sent as `Ocp-Apim-Subscription-Key`, or short-lived bearer token sent as `Authorization`. |
-| `voice` | yes | — | Azure voice name, e.g. `en-US-JennyNeural`, `fr-FR-DeniseNeural`. |
-| `region` | yes\* | — | Azure region (`eastus`, `westus`, `francecentral`, …). \* Or pass `baseUrl` directly. |
-| `baseUrl` | no | `https://{region}.tts.speech.microsoft.com` | Override for sovereign clouds or Azure private endpoints. |
-| `endpointPath` | no | `/cognitiveservices/v1` | Override if you front the service with a gateway. |
-| `outputFormat` | no | `raw-24khz-16bit-mono-pcm` | Must be a `raw-*` format (mp3/wav variants are rejected because they aren't streamable frame-by-frame). |
-| `language` | no | `en-US` | Used in the SSML `xml:lang` attribute. |
-| `voiceStyle` | no | — | Azure neural style (`cheerful`, `empathetic`, `customerservice`, …). |
-| `styleDegree` | no | — | Only applied when `voiceStyle` is set (0..2 typically). |
-| `prosody` | no | — | `{ rate, pitch, volume }` — strings forwarded to the SSML `<prosody>` element. |
-| `userAgent` | no | `@absolutejs/voice-azure` | Sent as `User-Agent`. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets. |
+| Option                      | Required | Default                                     | Notes                                                                                                      |
+| --------------------------- | -------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `subscriptionKey` / `token` | one of   | —                                           | Subscription key sent as `Ocp-Apim-Subscription-Key`, or short-lived bearer token sent as `Authorization`. |
+| `voice`                     | yes      | —                                           | Azure voice name, e.g. `en-US-JennyNeural`, `fr-FR-DeniseNeural`.                                          |
+| `region`                    | yes\*    | —                                           | Azure region (`eastus`, `westus`, `francecentral`, …). \* Or pass `baseUrl` directly.                      |
+| `baseUrl`                   | no       | `https://{region}.tts.speech.microsoft.com` | Override for sovereign clouds or Azure private endpoints.                                                  |
+| `endpointPath`              | no       | `/cognitiveservices/v1`                     | Override if you front the service with a gateway.                                                          |
+| `outputFormat`              | no       | `raw-24khz-16bit-mono-pcm`                  | Must be a `raw-*` format (mp3/wav variants are rejected because they aren't streamable frame-by-frame).    |
+| `language`                  | no       | `en-US`                                     | Used in the SSML `xml:lang` attribute.                                                                     |
+| `voiceStyle`                | no       | —                                           | Azure neural style (`cheerful`, `empathetic`, `customerservice`, …).                                       |
+| `styleDegree`               | no       | —                                           | Only applied when `voiceStyle` is set (0..2 typically).                                                    |
+| `prosody`                   | no       | —                                           | `{ rate, pitch, volume }` — strings forwarded to the SSML `<prosody>` element.                             |
+| `userAgent`                 | no       | `@absolutejs/voice-azure`                   | Sent as `User-Agent`.                                                                                      |
+| `fetch`                     | no       | `globalThis.fetch`                          | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets.                          |
 
 ## Notes
 
@@ -86,10 +86,14 @@ const app = voice({
     language: "en-US",
     // optional:
     recognitionMode: "conversation", // 'conversation' | 'dictation' | 'interactive'
-    format: "detailed",              // 'detailed' | 'simple'
-    profanity: "masked",             // 'masked' | 'raw' | 'removed'
+    format: "detailed", // 'detailed' | 'simple'
+    profanity: "masked", // 'masked' | 'raw' | 'removed'
   }),
-  tts: azureTTS({ region: "eastus", subscriptionKey, voice: "en-US-JennyNeural" }),
+  tts: azureTTS({
+    region: "eastus",
+    subscriptionKey,
+    voice: "en-US-JennyNeural",
+  }),
 });
 ```
 
@@ -103,19 +107,19 @@ The STT adapter speaks Azure's WebSocket Unified Speech Protocol directly (no Mi
 
 ### STT options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `subscriptionKey` / `token` | one of | — | Same auth choices as TTS. |
-| `region` | yes\* | — | Azure region. \* Or pass `baseUrl`. |
-| `baseUrl` | no | `wss://{region}.stt.speech.microsoft.com` | Override for sovereign clouds, private endpoints, or test stubs. |
-| `endpointPath` | no | `/speech/recognition/{mode}/cognitiveservices/v1` | Override if you front the service with a gateway. |
-| `recognitionMode` | no | `conversation` | `conversation` / `dictation` / `interactive`. |
-| `format` | no | `detailed` | `detailed` keeps confidence; `simple` is leaner. |
-| `language` | no | `en-US` | Used when `STTAdapterOpenOptions.languageStrategy` doesn't fix one. |
-| `profanity` | no | — | Forwarded as `?profanity=...`. |
-| `systemName` / `systemVersion` | no | `@absolutejs/voice-azure` / `0.0.1` | Sent in the speech.config telemetry blob. |
-| `connectTimeoutMs` | no | `8000` | Open-handshake timeout. |
-| `webSocket.factory` | no | `new WebSocket(url, { headers })` | Inject a fake socket for tests. |
+| Option                         | Required | Default                                           | Notes                                                               |
+| ------------------------------ | -------- | ------------------------------------------------- | ------------------------------------------------------------------- |
+| `subscriptionKey` / `token`    | one of   | —                                                 | Same auth choices as TTS.                                           |
+| `region`                       | yes\*    | —                                                 | Azure region. \* Or pass `baseUrl`.                                 |
+| `baseUrl`                      | no       | `wss://{region}.stt.speech.microsoft.com`         | Override for sovereign clouds, private endpoints, or test stubs.    |
+| `endpointPath`                 | no       | `/speech/recognition/{mode}/cognitiveservices/v1` | Override if you front the service with a gateway.                   |
+| `recognitionMode`              | no       | `conversation`                                    | `conversation` / `dictation` / `interactive`.                       |
+| `format`                       | no       | `detailed`                                        | `detailed` keeps confidence; `simple` is leaner.                    |
+| `language`                     | no       | `en-US`                                           | Used when `STTAdapterOpenOptions.languageStrategy` doesn't fix one. |
+| `profanity`                    | no       | —                                                 | Forwarded as `?profanity=...`.                                      |
+| `systemName` / `systemVersion` | no       | `@absolutejs/voice-azure` / `0.0.1`               | Sent in the speech.config telemetry blob.                           |
+| `connectTimeoutMs`             | no       | `8000`                                            | Open-handshake timeout.                                             |
+| `webSocket.factory`            | no       | `new WebSocket(url, { headers })`                 | Inject a fake socket for tests.                                     |
 
 ## Roadmap
 

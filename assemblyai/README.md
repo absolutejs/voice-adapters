@@ -11,12 +11,12 @@ bun add @absolutejs/voice @absolutejs/voice-assemblyai
 ## Setup
 
 ```ts
-import { assemblyai } from '@absolutejs/voice-assemblyai';
+import { assemblyai } from "@absolutejs/voice-assemblyai";
 
 const stt = assemblyai({
-	apiKey: process.env.ASSEMBLYAI_API_KEY!,
-	speechModel: 'universal-streaming-english',
-	formatTurns: true
+  apiKey: process.env.ASSEMBLYAI_API_KEY!,
+  speechModel: "universal-streaming-english",
+  formatTurns: true,
 });
 ```
 

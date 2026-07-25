@@ -1,7 +1,7 @@
-export { rime } from './rime';
+export { rime } from "./rime";
 export type {
-	RimeAudioFormat,
-	RimeModel,
-	RimeSampleRate,
-	RimeTTSOptions
-} from './types';
+  RimeAudioFormat,
+  RimeModel,
+  RimeSampleRate,
+  RimeTTSOptions,
+} from "./types";

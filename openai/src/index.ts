@@ -1,11 +1,11 @@
-export { openai } from './openai';
+export { openai } from "./openai";
 export type {
-	OpenAIBuiltInVoice,
-	OpenAICustomVoice,
-	OpenAIInputTranscriptionModel,
-	OpenAINoiseReduction,
-	OpenAIRealtimeAdapterOptions,
-	OpenAIRealtimeModel,
-	OpenAIRealtimeVoice,
-	OpenAIResponseMode
-} from './types';
+  OpenAIBuiltInVoice,
+  OpenAICustomVoice,
+  OpenAIInputTranscriptionModel,
+  OpenAINoiseReduction,
+  OpenAIRealtimeAdapterOptions,
+  OpenAIRealtimeModel,
+  OpenAIRealtimeVoice,
+  OpenAIResponseMode,
+} from "./types";

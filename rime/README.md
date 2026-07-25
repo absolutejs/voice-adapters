@@ -24,9 +24,9 @@ const app = voice({
     apiKey: process.env.RIME_API_KEY!,
     speaker: "cove",
     // optional:
-    modelId: "mistv2",           // default; or 'mist' / 'arcana'
-    audioFormat: "pcm",          // default; or 'mulaw' for telephony
-    sampleRate: 22_050,          // default
+    modelId: "mistv2", // default; or 'mist' / 'arcana'
+    audioFormat: "pcm", // default; or 'mulaw' for telephony
+    sampleRate: 22_050, // default
     speedAlpha: 1.0,
     lang: "eng",
     reduceLatency: true,
@@ -48,18 +48,18 @@ rime({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Rime API key, sent as `Authorization: Bearer <key>`. |
-| `speaker` | yes | — | Rime speaker id (`cove`, `marsh`, `river`, etc.). |
-| `modelId` | no | `mistv2` | `mist`, `mistv2`, `arcana`, or a future Rime model id. |
-| `audioFormat` | no | `pcm` | Must be `pcm` (PCM s16le) or `mulaw` (telephony @ 8 kHz). |
-| `sampleRate` | no | `22050` | Ignored for `mulaw`. |
-| `lang` | no | — | Language hint (`eng`, etc.). |
-| `speedAlpha`, `inlineSpeedAlpha` | no | — | Forwarded to Rime. |
-| `reduceLatency`, `pauseBetweenBrackets`, `phonemizeBetweenBrackets`, `noTextNormalization` | no | — | Forwarded as boolean controls. |
-| `baseUrl` | no | `https://users.rime.ai` | Override for staging hosts. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS. |
+| Option                                                                                     | Required | Default                 | Notes                                                                  |
+| ------------------------------------------------------------------------------------------ | -------- | ----------------------- | ---------------------------------------------------------------------- |
+| `apiKey`                                                                                   | yes      | —                       | Rime API key, sent as `Authorization: Bearer <key>`.                   |
+| `speaker`                                                                                  | yes      | —                       | Rime speaker id (`cove`, `marsh`, `river`, etc.).                      |
+| `modelId`                                                                                  | no       | `mistv2`                | `mist`, `mistv2`, `arcana`, or a future Rime model id.                 |
+| `audioFormat`                                                                              | no       | `pcm`                   | Must be `pcm` (PCM s16le) or `mulaw` (telephony @ 8 kHz).              |
+| `sampleRate`                                                                               | no       | `22050`                 | Ignored for `mulaw`.                                                   |
+| `lang`                                                                                     | no       | —                       | Language hint (`eng`, etc.).                                           |
+| `speedAlpha`, `inlineSpeedAlpha`                                                           | no       | —                       | Forwarded to Rime.                                                     |
+| `reduceLatency`, `pauseBetweenBrackets`, `phonemizeBetweenBrackets`, `noTextNormalization` | no       | —                       | Forwarded as boolean controls.                                         |
+| `baseUrl`                                                                                  | no       | `https://users.rime.ai` | Override for staging hosts.                                            |
+| `fetch`                                                                                    | no       | `globalThis.fetch`      | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS. |
 
 ## Notes
 

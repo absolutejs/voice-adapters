@@ -15,6 +15,10 @@
  */
 import { writeFile, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { format } from 'prettier';
+
+const CHECK_MODE = process.argv.includes('--check');
+const mismatches: string[] = [];
 
 type VendorContract = 'voice/realtime' | 'voice/stt' | 'voice/tts';
 
@@ -1050,7 +1054,7 @@ import { Type } from '@sinclair/typebox';
 import type { ${optionImports.join(', ')} } from './types';
 
 export const manifest = defineManifest<Record<never, never>>()({
-	contract: 1,
+	contract: 2,
 	identity: {
 		category: 'voice',
 		description:
@@ -1069,15 +1073,27 @@ ${implementations}
 };
 
 type PackageJsonShape = {
+	version: string;
 	scripts: Record<string, string>;
 	exports: Record<string, unknown>;
 	dependencies?: Record<string, string>;
-	absolutejs?: { manifestContract: number };
+	devDependencies?: Record<string, string>;
+	peerDependencies?: Record<string, string>;
+	repository?: {
+		directory?: string;
+		type: string;
+		url: string;
+	};
+	absolutejs?: {
+		manifestContract: number;
+		runtimePeers?: Record<string, unknown>;
+	};
 };
 
 const syncPackageJson = async (vendorDir: string) => {
 	const path = join(import.meta.dir, '..', vendorDir, 'package.json');
-	const pkg: PackageJsonShape = JSON.parse(await readFile(path, 'utf8'));
+	const current = await readFile(path, 'utf8');
+	const pkg: PackageJsonShape = JSON.parse(current);
 	if (!pkg.scripts.build.includes('./src/manifest.ts'))
 		pkg.scripts.build = pkg.scripts.build.replace(
 			'bun build ./src/index.ts',
@@ -1085,21 +1101,68 @@ const syncPackageJson = async (vendorDir: string) => {
 		);
 	if (!pkg.scripts.build.includes('absolute-manifest emit'))
 		pkg.scripts.build = `${pkg.scripts.build} && absolute-manifest emit`;
+	if (!pkg.scripts.build.includes('--external @absolutejs/manifest'))
+		pkg.scripts.build = pkg.scripts.build.replace(
+			'--external @absolutejs/voice',
+			"--external @absolutejs/manifest --external '@absolutejs/manifest/*' --external @absolutejs/voice --external '@absolutejs/voice/*' --external @sinclair/typebox --external '@sinclair/typebox/*'"
+		);
+	pkg.scripts.release = `bun run check:package && npm publish --access public${
+		pkg.version.includes('-beta.') ? ' --tag beta' : ''
+	}`;
+	pkg.scripts['verify-package'] = 'absolute-manifest verify-package';
+	pkg.scripts['check:package'] =
+		'bun run format && bun run typecheck && bun run test && bun run verify-package && bun run build && bun run verify-package --artifacts';
 	pkg.exports['./manifest'] = {
 		import: './dist/manifest.js',
 		types: './dist/manifest.d.ts'
 	};
 	pkg.exports['./manifest.json'] = './dist/manifest.json';
-	pkg.absolutejs = { manifestContract: 1 };
+	pkg.absolutejs = {
+		manifestContract: 2,
+		runtimePeers: {
+			'@absolutejs/voice': {
+				artifactImports: [],
+				buildExternals: ['@absolutejs/voice', '@absolutejs/voice/*'],
+				optional: false,
+				range: '>=0.0.22-beta.647 <0.1',
+				tested: '0.0.22-beta.647'
+			}
+		}
+	};
 	const dependencies = pkg.dependencies ?? {};
-	dependencies['@absolutejs/manifest'] = '^0.1.0';
-	dependencies['@sinclair/typebox'] = '^0.34.0';
+	dependencies['@absolutejs/manifest'] = '0.7.2';
+	dependencies['@sinclair/typebox'] = '0.34.52';
 	pkg.dependencies = Object.fromEntries(
 		Object.entries(dependencies).sort(([left], [right]) =>
 			left.localeCompare(right)
 		)
 	);
-	await writeFile(path, `${JSON.stringify(pkg, null, '\t')}\n`);
+	const devDependencies = pkg.devDependencies ?? {};
+	delete devDependencies['@absolutejs/absolute'];
+	devDependencies['@absolutejs/voice'] = '0.0.22-beta.647';
+	devDependencies['@types/bun'] = '1.3.14';
+	devDependencies.elysia = '1.4.29';
+	devDependencies.prettier = '3.9.6';
+	pkg.devDependencies = Object.fromEntries(
+		Object.entries(devDependencies).sort(([left], [right]) =>
+			left.localeCompare(right)
+		)
+	);
+	pkg.peerDependencies = {
+		...(pkg.peerDependencies ?? {}),
+		'@absolutejs/voice': '>=0.0.22-beta.647 <0.1'
+	};
+	if (pkg.repository?.url.startsWith('https://')) {
+		pkg.repository.url = `git+${pkg.repository.url}`;
+	}
+	const generated = await format(JSON.stringify(pkg), {
+		parser: 'json-stringify'
+	});
+	if (CHECK_MODE) {
+		if (current !== generated) mismatches.push(`${vendorDir}/package.json`);
+	} else {
+		await writeFile(path, generated);
+	}
 };
 
 for (const vendor of VENDORS) {
@@ -1109,7 +1172,25 @@ for (const vendor of VENDORS) {
 		vendor.dir,
 		'src/manifest.ts'
 	);
-	await writeFile(manifestPath, renderManifest(vendor));
+	const generatedManifest = await format(renderManifest(vendor), {
+		parser: 'typescript'
+	});
+	if (CHECK_MODE) {
+		if ((await readFile(manifestPath, 'utf8')) !== generatedManifest)
+			mismatches.push(`${vendor.dir}/src/manifest.ts`);
+	} else {
+		await writeFile(manifestPath, generatedManifest);
+	}
 	await syncPackageJson(vendor.dir);
-	console.log(`wrote ${vendor.dir}/src/manifest.ts (+package.json)`);
+	console.log(
+		`${CHECK_MODE ? 'verified' : 'wrote'} ${vendor.dir}/src/manifest.ts (+package.json)`
+	);
+}
+
+if (mismatches.length > 0) {
+	throw new Error(
+		`Generated voice adapter manifests are stale:\n${mismatches
+			.map((path) => `- ${path}`)
+			.join('\n')}`
+	);
 }

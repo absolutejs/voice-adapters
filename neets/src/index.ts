@@ -1,8 +1,8 @@
-export { neets } from './neets';
+export { neets } from "./neets";
 export type {
-	NeetsAudioFormat,
-	NeetsLanguage,
-	NeetsModel,
-	NeetsSampleRate,
-	NeetsTTSOptions
-} from './types';
+  NeetsAudioFormat,
+  NeetsLanguage,
+  NeetsModel,
+  NeetsSampleRate,
+  NeetsTTSOptions,
+} from "./types";

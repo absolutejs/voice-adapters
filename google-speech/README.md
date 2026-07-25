@@ -24,12 +24,12 @@ const app = voice({
     project: process.env.GOOGLE_PROJECT_ID!,
     accessToken: await mintBearerToken(),
     // optional:
-    location: "global",                     // default
-    model: "latest_long",                   // default; or 'latest_short' / 'chirp_2' / 'telephony' / ...
+    location: "global", // default
+    model: "latest_long", // default; or 'latest_short' / 'chirp_2' / 'telephony' / ...
     language: "en-US",
-    languages: ["en-US"],                   // used unless languageStrategy overrides
-    interimResults: true,                   // default — partial transcripts emitted
-    enableVoiceActivityEvents: true,        // surface SPEECH_ACTIVITY_END as endOfTurn
+    languages: ["en-US"], // used unless languageStrategy overrides
+    interimResults: true, // default — partial transcripts emitted
+    enableVoiceActivityEvents: true, // surface SPEECH_ACTIVITY_END as endOfTurn
     enableAutomaticPunctuation: true,
     enableWordConfidence: true,
   }),
@@ -57,18 +57,18 @@ googleSpeechStream({
 
 ### Streaming options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `accessToken` / `getAccessToken` | one of | — | OAuth Bearer token (or async refresh hook). API keys are **not** supported on the streaming RPC; use the buffered-batch `googleSpeech(...)` for API-key flows. |
-| `project` | yes | — | Google Cloud project id; combined with `location` to form the `recognizer` resource path. |
-| `location` | no | `global` | Override for regional Speech endpoints. |
-| `model` | no | `latest_long` | Any Speech v2 model id (`latest_long`, `latest_short`, `chirp`, `chirp_2`, `telephony`, `telephony_short`, etc.). |
-| `language` / `languages` | no | `en-US` | Used unless `STTAdapterOpenOptions.languageStrategy` resolves a list (`fixed` → single language; `allow-switching` → primary + secondaries; `auto-detect` → allowed list). |
-| `interimResults` | no | `true` | Whether Google emits partial hypotheses. |
-| `enableVoiceActivityEvents` | no | — | When `true`, Google emits speech-activity event types — mapped to `endOfTurn`. |
-| `enableAutomaticPunctuation`, `enableWordTimeOffsets`, `enableWordConfidence`, `enableSpokenPunctuation`, `enableSpokenEmojis`, `profanityFilter` | no | — | Forwarded into `RecognitionConfig.features`. |
-| `authority`, `path` | no | `speech.googleapis.com`, `/google.cloud.speech.v2.Speech/StreamingRecognize` | Override for sovereign clouds / proxies. |
-| `transport` | no | `node:http2`-backed default | Pluggable transport factory — used by the test suite to inject a fake socket. |
+| Option                                                                                                                                            | Required | Default                                                                      | Notes                                                                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `accessToken` / `getAccessToken`                                                                                                                  | one of   | —                                                                            | OAuth Bearer token (or async refresh hook). API keys are **not** supported on the streaming RPC; use the buffered-batch `googleSpeech(...)` for API-key flows.             |
+| `project`                                                                                                                                         | yes      | —                                                                            | Google Cloud project id; combined with `location` to form the `recognizer` resource path.                                                                                  |
+| `location`                                                                                                                                        | no       | `global`                                                                     | Override for regional Speech endpoints.                                                                                                                                    |
+| `model`                                                                                                                                           | no       | `latest_long`                                                                | Any Speech v2 model id (`latest_long`, `latest_short`, `chirp`, `chirp_2`, `telephony`, `telephony_short`, etc.).                                                          |
+| `language` / `languages`                                                                                                                          | no       | `en-US`                                                                      | Used unless `STTAdapterOpenOptions.languageStrategy` resolves a list (`fixed` → single language; `allow-switching` → primary + secondaries; `auto-detect` → allowed list). |
+| `interimResults`                                                                                                                                  | no       | `true`                                                                       | Whether Google emits partial hypotheses.                                                                                                                                   |
+| `enableVoiceActivityEvents`                                                                                                                       | no       | —                                                                            | When `true`, Google emits speech-activity event types — mapped to `endOfTurn`.                                                                                             |
+| `enableAutomaticPunctuation`, `enableWordTimeOffsets`, `enableWordConfidence`, `enableSpokenPunctuation`, `enableSpokenEmojis`, `profanityFilter` | no       | —                                                                            | Forwarded into `RecognitionConfig.features`.                                                                                                                               |
+| `authority`, `path`                                                                                                                               | no       | `speech.googleapis.com`, `/google.cloud.speech.v2.Speech/StreamingRecognize` | Override for sovereign clouds / proxies.                                                                                                                                   |
+| `transport`                                                                                                                                       | no       | `node:http2`-backed default                                                  | Pluggable transport factory — used by the test suite to inject a fake socket.                                                                                              |
 
 ## Buffered-batch (`googleSpeech`)
 

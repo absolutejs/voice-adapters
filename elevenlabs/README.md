@@ -11,13 +11,13 @@ bun add @absolutejs/voice @absolutejs/voice-elevenlabs
 ## Setup
 
 ```ts
-import { elevenlabs } from '@absolutejs/voice-elevenlabs';
+import { elevenlabs } from "@absolutejs/voice-elevenlabs";
 
 const tts = elevenlabs({
-	apiKey: process.env.ELEVENLABS_API_KEY!,
-	voiceId: 'JBFqnCBsd6RMkjVDRZzb',
-	modelId: 'eleven_flash_v2_5',
-	outputFormat: 'pcm_16000'
+  apiKey: process.env.ELEVENLABS_API_KEY!,
+  voiceId: "JBFqnCBsd6RMkjVDRZzb",
+  modelId: "eleven_flash_v2_5",
+  outputFormat: "pcm_16000",
 });
 ```
 
@@ -27,15 +27,15 @@ If you need a warm persistent TTS session for lower turn startup latency, you ca
 
 ```ts
 const tts = elevenlabs({
-	apiKey: process.env.ELEVENLABS_API_KEY!,
-	voiceId: 'JBFqnCBsd6RMkjVDRZzb',
-	modelId: 'eleven_flash_v2_5',
-	outputFormat: 'ulaw_8000',
-	transport: 'websocket',
-	websocket: {
-		autoMode: true,
-		inactivityTimeoutSec: 180
-	}
+  apiKey: process.env.ELEVENLABS_API_KEY!,
+  voiceId: "JBFqnCBsd6RMkjVDRZzb",
+  modelId: "eleven_flash_v2_5",
+  outputFormat: "ulaw_8000",
+  transport: "websocket",
+  websocket: {
+    autoMode: true,
+    inactivityTimeoutSec: 180,
+  },
 });
 ```
 

@@ -23,8 +23,8 @@ const app = voice({
     apiKey: process.env.GLADIA_API_KEY!,
     // optional:
     model: "solaria-1",
-    languages: ["en"],         // language detection seed
-    codeSwitching: true,       // for multilingual callers
+    languages: ["en"], // language detection seed
+    codeSwitching: true, // for multilingual callers
     realtimeProcessing: { sentences: true },
   }),
   // ... tts + other options ...
@@ -43,19 +43,19 @@ app.use({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Gladia API key, sent as `X-Gladia-Key`. |
-| `model` | no | `solaria-1` | Gladia model id. |
-| `languages` | no | — | Default language list, overridden when `STTAdapterOpenOptions.languageStrategy` resolves a list. |
-| `codeSwitching` | no | — | Enable mid-utterance language switching. |
-| `realtimeProcessing` | no | — | Forwarded to Gladia's `realtime_processing` config (sentences, diarization, etc.). |
-| `punctuationConfig` | no | — | Forwarded to `punctuation_config`. |
-| `baseUrl` | no | `https://api.gladia.io` | Override for staging / enterprise endpoints. |
-| `sessionPath` | no | `/v2/live` | Override if you proxy Gladia behind a gateway. |
-| `connectTimeoutMs` | no | `8000` | Time to wait for the WebSocket `open` event. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS. |
-| `webSocket.factory` | no | `new WebSocket(url)` | Inject a fake socket for tests. |
+| Option               | Required | Default                 | Notes                                                                                            |
+| -------------------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `apiKey`             | yes      | —                       | Gladia API key, sent as `X-Gladia-Key`.                                                          |
+| `model`              | no       | `solaria-1`             | Gladia model id.                                                                                 |
+| `languages`          | no       | —                       | Default language list, overridden when `STTAdapterOpenOptions.languageStrategy` resolves a list. |
+| `codeSwitching`      | no       | —                       | Enable mid-utterance language switching.                                                         |
+| `realtimeProcessing` | no       | —                       | Forwarded to Gladia's `realtime_processing` config (sentences, diarization, etc.).               |
+| `punctuationConfig`  | no       | —                       | Forwarded to `punctuation_config`.                                                               |
+| `baseUrl`            | no       | `https://api.gladia.io` | Override for staging / enterprise endpoints.                                                     |
+| `sessionPath`        | no       | `/v2/live`              | Override if you proxy Gladia behind a gateway.                                                   |
+| `connectTimeoutMs`   | no       | `8000`                  | Time to wait for the WebSocket `open` event.                                                     |
+| `fetch`              | no       | `globalThis.fetch`      | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS.                           |
+| `webSocket.factory`  | no       | `new WebSocket(url)`    | Inject a fake socket for tests.                                                                  |
 
 ## Notes
 

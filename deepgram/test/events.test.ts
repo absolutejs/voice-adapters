@@ -1,346 +1,343 @@
-import { describe, expect, test } from 'bun:test';
-import { deepgram } from '../src';
+import { describe, expect, test } from "bun:test";
+import { deepgram } from "../src";
 
 type WebSocketListener = (event: { [key: string]: unknown }) => void;
 
 class MockWebSocket {
-	static lastInstance: MockWebSocket | null = null;
-	static instances: MockWebSocket[] = [];
+  static lastInstance: MockWebSocket | null = null;
+  static instances: MockWebSocket[] = [];
 
-	static reset() {
-		MockWebSocket.lastInstance = null;
-		MockWebSocket.instances = [];
-	}
+  static reset() {
+    MockWebSocket.lastInstance = null;
+    MockWebSocket.instances = [];
+  }
 
-	readyState = 1;
-	init: unknown;
-	url: string;
-	protocol = '';
-	sent: unknown[] = [];
-	private listeners = new Map<string, Set<WebSocketListener>>();
+  readyState = 1;
+  init: unknown;
+  url: string;
+  protocol = "";
+  sent: unknown[] = [];
+  private listeners = new Map<string, Set<WebSocketListener>>();
 
-	constructor(url: string, init?: unknown) {
-		this.url = url;
-		this.init = init;
-		MockWebSocket.instances.push(this);
-		MockWebSocket.lastInstance = this;
+  constructor(url: string, init?: unknown) {
+    this.url = url;
+    this.init = init;
+    MockWebSocket.instances.push(this);
+    MockWebSocket.lastInstance = this;
 
-		queueMicrotask(() => {
-			this.emit('open', {});
-		});
-	}
+    queueMicrotask(() => {
+      this.emit("open", {});
+    });
+  }
 
-	addEventListener(
-		event: string,
-		handler: WebSocketListener,
-		options?: { once?: boolean }
-	) {
-		let normalized = this.listeners.get(event);
-		if (!normalized) {
-			normalized = new Set();
-			this.listeners.set(event, normalized);
-		}
+  addEventListener(
+    event: string,
+    handler: WebSocketListener,
+    options?: { once?: boolean },
+  ) {
+    let normalized = this.listeners.get(event);
+    if (!normalized) {
+      normalized = new Set();
+      this.listeners.set(event, normalized);
+    }
 
-		const listener: WebSocketListener = options?.once
-			? (value) => {
-					this.listeners.get(event)?.delete(listener);
-					handler(value);
-			  }
-			: handler;
+    const listener: WebSocketListener = options?.once
+      ? (value) => {
+          this.listeners.get(event)?.delete(listener);
+          handler(value);
+        }
+      : handler;
 
-		normalized.add(listener);
-	}
+    normalized.add(listener);
+  }
 
-	removeEventListener(event: string, handler: WebSocketListener) {
-		this.listeners.get(event)?.delete(handler);
-	}
+  removeEventListener(event: string, handler: WebSocketListener) {
+    this.listeners.get(event)?.delete(handler);
+  }
 
-	send(data: unknown) {
-		this.sent.push(data);
-	}
+  send(data: unknown) {
+    this.sent.push(data);
+  }
 
-	close(code?: number, reason?: string) {
-		this.readyState = 3;
-		this.emit('close', { code, reason });
-	}
+  close(code?: number, reason?: string) {
+    this.readyState = 3;
+    this.emit("close", { code, reason });
+  }
 
-	emitMessage(payload: Record<string, unknown>) {
-		this.emit('message', { data: JSON.stringify(payload) });
-	}
+  emitMessage(payload: Record<string, unknown>) {
+    this.emit("message", { data: JSON.stringify(payload) });
+  }
 
-	private emit(type: string, event: { [key: string]: unknown }) {
-		for (const listener of this.listeners.get(type) ?? new Set()) {
-			listener({ ...event, type });
-		}
-	}
+  private emit(type: string, event: { [key: string]: unknown }) {
+    for (const listener of this.listeners.get(type) ?? new Set()) {
+      listener({ ...event, type });
+    }
+  }
 }
 
 const withDeepgramSession = async <T>(
-	model = 'nova-3',
-	callback: (
-		session: Awaited<ReturnType<ReturnType<typeof deepgram>['open']>>,
-		socket: MockWebSocket
-	) => Promise<T>
+  model = "nova-3",
+  callback: (
+    session: Awaited<ReturnType<ReturnType<typeof deepgram>["open"]>>,
+    socket: MockWebSocket,
+  ) => Promise<T>,
 ) => {
-	const originalSocket = globalThis.WebSocket;
-	MockWebSocket.reset();
+  const originalSocket = globalThis.WebSocket;
+  MockWebSocket.reset();
 
-	try {
-		globalThis.WebSocket = MockWebSocket as never;
+  try {
+    globalThis.WebSocket = MockWebSocket as never;
 
-		const session = await deepgram({
-			apiKey: 'test-key',
-			model,
-			punctuate: true,
-			smartFormat: true
-		}).open({
-			format: {
-				channels: 1,
-				container: 'raw',
-				encoding: 'pcm_s16le',
-				sampleRateHz: 16000
-			},
-			sessionId: `dg-event-${model}`
-		});
+    const session = await deepgram({
+      apiKey: "test-key",
+      model,
+      punctuate: true,
+      smartFormat: true,
+    }).open({
+      format: {
+        channels: 1,
+        container: "raw",
+        encoding: "pcm_s16le",
+        sampleRateHz: 16000,
+      },
+      sessionId: `dg-event-${model}`,
+    });
 
-		const socket = MockWebSocket.lastInstance;
-		if (!socket) {
-			throw new Error('Mock WebSocket was not created.');
-		}
+    const socket = MockWebSocket.lastInstance;
+    if (!socket) {
+      throw new Error("Mock WebSocket was not created.");
+    }
 
-		try {
-			return await callback(session, socket);
-		} finally {
-			await session.close('unit-test');
-		}
-	} finally {
-		globalThis.WebSocket = originalSocket;
-	}
+    try {
+      return await callback(session, socket);
+    } finally {
+      await session.close("unit-test");
+    }
+  } finally {
+    globalThis.WebSocket = originalSocket;
+  }
 };
 
-describe('deepgram adapter', () => {
-	test('uses header auth by default', async () => {
-		await withDeepgramSession('nova-3', async () => {
-			expect(MockWebSocket.lastInstance).not.toBeNull();
-			expect(MockWebSocket.lastInstance?.init).toEqual({
-				headers: {
-					Authorization: 'Token test-key'
-				}
-			});
-		});
-	});
+describe("deepgram adapter", () => {
+  test("uses header auth by default", async () => {
+    await withDeepgramSession("nova-3", async () => {
+      expect(MockWebSocket.lastInstance).not.toBeNull();
+      expect(MockWebSocket.lastInstance?.init).toEqual({
+        headers: {
+          Authorization: "Token test-key",
+        },
+      });
+    });
+  });
 
-	test('uses protocol auth when configured', async () => {
-		const originalSocket = globalThis.WebSocket;
-		MockWebSocket.reset();
+  test("uses protocol auth when configured", async () => {
+    const originalSocket = globalThis.WebSocket;
+    MockWebSocket.reset();
 
-		try {
-			globalThis.WebSocket = MockWebSocket as never;
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
 
-			const session = await deepgram({
-				apiKey: 'test-key',
-				authMode: 'protocol',
-				model: 'nova-3',
-				punctuate: true,
-				smartFormat: true
-			}).open({
-				format: {
-					channels: 1,
-					container: 'raw',
-					encoding: 'pcm_s16le',
-					sampleRateHz: 16000
-				},
-				sessionId: 'dg-auth-protocol'
-			});
+      const session = await deepgram({
+        apiKey: "test-key",
+        authMode: "protocol",
+        model: "nova-3",
+        punctuate: true,
+        smartFormat: true,
+      }).open({
+        format: {
+          channels: 1,
+          container: "raw",
+          encoding: "pcm_s16le",
+          sampleRateHz: 16000,
+        },
+        sessionId: "dg-auth-protocol",
+      });
 
-			expect(MockWebSocket.lastInstance).not.toBeNull();
-			expect(MockWebSocket.lastInstance?.init).toEqual([
-				'token',
-				'test-key'
-			]);
+      expect(MockWebSocket.lastInstance).not.toBeNull();
+      expect(MockWebSocket.lastInstance?.init).toEqual(["token", "test-key"]);
 
-			await session.close('unit-test');
-		} finally {
-			globalThis.WebSocket = originalSocket;
-		}
-	});
+      await session.close("unit-test");
+    } finally {
+      globalThis.WebSocket = originalSocket;
+    }
+  });
 
-	test('deduplicates duplicate non-flux final + end-of-turn events', async () => {
-		await withDeepgramSession('nova-3', async (session, socket) => {
-			const finals: Array<unknown> = [];
-			const ends: Array<unknown> = [];
+  test("deduplicates duplicate non-flux final + end-of-turn events", async () => {
+    await withDeepgramSession("nova-3", async (session, socket) => {
+      const finals: Array<unknown> = [];
+      const ends: Array<unknown> = [];
 
-			session.on('final', () => {
-				finals.push(1);
-			});
-			session.on('endOfTurn', () => {
-				ends.push(1);
-			});
+      session.on("final", () => {
+        finals.push(1);
+      });
+      session.on("endOfTurn", () => {
+        ends.push(1);
+      });
 
-			const message = {
-				channel: {
-					alternatives: [{ transcript: 'hello there', confidence: 0.99 }]
-				},
-				is_final: true,
-				language: 'en',
-				speech_final: true,
-				type: 'Results'
-			};
+      const message = {
+        channel: {
+          alternatives: [{ transcript: "hello there", confidence: 0.99 }],
+        },
+        is_final: true,
+        language: "en",
+        speech_final: true,
+        type: "Results",
+      };
 
-			socket.emitMessage(message);
-			socket.emitMessage(message);
-			await Bun.sleep(1);
+      socket.emitMessage(message);
+      socket.emitMessage(message);
+      await Bun.sleep(1);
 
-			expect(finals).toHaveLength(1);
-			expect(ends).toHaveLength(1);
-		});
-	});
+      expect(finals).toHaveLength(1);
+      expect(ends).toHaveLength(1);
+    });
+  });
 
-	test('deduplicates duplicate Flux end-of-turn events', async () => {
-		await withDeepgramSession('flux-general-en', async (session, socket) => {
-			const finals: Array<{ transcript: { [key: string]: unknown } }> = [];
-			const ends: Array<unknown> = [];
+  test("deduplicates duplicate Flux end-of-turn events", async () => {
+    await withDeepgramSession("flux-general-en", async (session, socket) => {
+      const finals: Array<{ transcript: { [key: string]: unknown } }> = [];
+      const ends: Array<unknown> = [];
 
-			session.on('final', (event) => {
-				finals.push(event);
-			});
-			session.on('endOfTurn', () => {
-				ends.push(1);
-			});
+      session.on("final", (event) => {
+        finals.push(event);
+      });
+      session.on("endOfTurn", () => {
+        ends.push(1);
+      });
 
-			const message = {
-				audio_window_end: 1.25,
-				audio_window_start: 0.4,
-				end_of_turn_confidence: 0.83,
-				event: 'EndOfTurn',
-				request_id: 'request-id',
-				sequence_id: 7,
-				transcript: 'I am testing this feature',
-				type: 'TurnInfo',
-				words: [
-					{ confidence: 0.999, end: 0.61, start: 0.4, word: 'I' },
-					{ confidence: 0.51, end: 0.89, start: 0.62, word: 'am' },
-					{ confidence: 0.98, end: 1.02, start: 0.9, word: 'testing' }
-				]
-			};
+      const message = {
+        audio_window_end: 1.25,
+        audio_window_start: 0.4,
+        end_of_turn_confidence: 0.83,
+        event: "EndOfTurn",
+        request_id: "request-id",
+        sequence_id: 7,
+        transcript: "I am testing this feature",
+        type: "TurnInfo",
+        words: [
+          { confidence: 0.999, end: 0.61, start: 0.4, word: "I" },
+          { confidence: 0.51, end: 0.89, start: 0.62, word: "am" },
+          { confidence: 0.98, end: 1.02, start: 0.9, word: "testing" },
+        ],
+      };
 
-			socket.emitMessage(message);
-			socket.emitMessage(message);
-			await Bun.sleep(1);
+      socket.emitMessage(message);
+      socket.emitMessage(message);
+      await Bun.sleep(1);
 
-			expect(finals).toHaveLength(1);
-			expect(ends).toHaveLength(1);
-			expect(finals[0]?.transcript.confidence).toBeCloseTo(0.829667);
-			expect(finals[0]?.transcript.words).toEqual([
-				{
-					confidence: 0.999,
-					endedAtMs: 610,
-					language: undefined,
-					punctuatedText: undefined,
-					speaker: undefined,
-					startedAtMs: 400,
-					text: 'I'
-				},
-				{
-					confidence: 0.51,
-					endedAtMs: 890,
-					language: undefined,
-					punctuatedText: undefined,
-					speaker: undefined,
-					startedAtMs: 620,
-					text: 'am'
-				},
-				{
-					confidence: 0.98,
-					endedAtMs: 1020,
-					language: undefined,
-					punctuatedText: undefined,
-					speaker: undefined,
-					startedAtMs: 900,
-					text: 'testing'
-				}
-			]);
-		});
-	});
+      expect(finals).toHaveLength(1);
+      expect(ends).toHaveLength(1);
+      expect(finals[0]?.transcript.confidence).toBeCloseTo(0.829667);
+      expect(finals[0]?.transcript.words).toEqual([
+        {
+          confidence: 0.999,
+          endedAtMs: 610,
+          language: undefined,
+          punctuatedText: undefined,
+          speaker: undefined,
+          startedAtMs: 400,
+          text: "I",
+        },
+        {
+          confidence: 0.51,
+          endedAtMs: 890,
+          language: undefined,
+          punctuatedText: undefined,
+          speaker: undefined,
+          startedAtMs: 620,
+          text: "am",
+        },
+        {
+          confidence: 0.98,
+          endedAtMs: 1020,
+          language: undefined,
+          punctuatedText: undefined,
+          speaker: undefined,
+          startedAtMs: 900,
+          text: "testing",
+        },
+      ]);
+    });
+  });
 
-	test('updates Flux keyterms and language hints without reconnecting', async () => {
-		await withDeepgramSession('flux-general-multi', async (session, socket) => {
-			await session.configure?.({
-				languageHints: ['en', 'es', 'en'],
-				lexicon: [{ text: 'OnSpark', aliases: ['on spark'] }],
-				phraseHints: [{ text: 'AbsoluteJS' }]
-			});
+  test("updates Flux keyterms and language hints without reconnecting", async () => {
+    await withDeepgramSession("flux-general-multi", async (session, socket) => {
+      await session.configure?.({
+        languageHints: ["en", "es", "en"],
+        lexicon: [{ text: "OnSpark", aliases: ["on spark"] }],
+        phraseHints: [{ text: "AbsoluteJS" }],
+      });
 
-			const configure = socket.sent
-				.filter((entry): entry is string => typeof entry === 'string')
-				.map((entry) => JSON.parse(entry))
-				.find((entry) => entry.type === 'Configure');
+      const configure = socket.sent
+        .filter((entry): entry is string => typeof entry === "string")
+        .map((entry) => JSON.parse(entry))
+        .find((entry) => entry.type === "Configure");
 
-			expect(configure).toEqual({
-				keyterms: ['on spark', 'AbsoluteJS', 'OnSpark'],
-				language_hints: ['en', 'es'],
-				type: 'Configure'
-			});
-		});
-	});
+      expect(configure).toEqual({
+        keyterms: ["on spark", "AbsoluteJS", "OnSpark"],
+        language_hints: ["en", "es"],
+        type: "Configure",
+      });
+    });
+  });
 
-	// Regression: both model families idle-drop the socket on silence
-	// (code=INACTIVE_CLIENT → zero-turn call). nova (v1) accepts the KeepAlive
-	// CONTROL message; Flux (v2) REJECTS it ("unknown variant `KeepAlive`"), so
-	// Flux must instead be kept warm with binary SILENCE frames — and must NEVER
-	// be sent the KeepAlive message.
-	const openIdleSession = async (model: string) => {
-		MockWebSocket.reset();
-		const session = await deepgram({
-			apiKey: 'test-key',
-			keepAliveMs: 15,
-			model
-		}).open({
-			format: {
-				channels: 1,
-				container: 'raw',
-				encoding: 'pcm_s16le',
-				sampleRateHz: 16000
-			},
-			sessionId: `dg-keepalive-${model}`
-		});
-		const socket = MockWebSocket.lastInstance;
-		if (!socket) {
-			throw new Error('Mock WebSocket was not created.');
-		}
-		await Bun.sleep(60);
-		const keepAliveMessages = socket.sent.filter(
-			(payload) => typeof payload === 'string' && payload.includes('KeepAlive')
-		);
-		const binaryFrames = socket.sent.filter(
-			(payload) => payload instanceof Uint8Array
-		);
-		await session.close('unit-test');
+  // Regression: both model families idle-drop the socket on silence
+  // (code=INACTIVE_CLIENT → zero-turn call). nova (v1) accepts the KeepAlive
+  // CONTROL message; Flux (v2) REJECTS it ("unknown variant `KeepAlive`"), so
+  // Flux must instead be kept warm with binary SILENCE frames — and must NEVER
+  // be sent the KeepAlive message.
+  const openIdleSession = async (model: string) => {
+    MockWebSocket.reset();
+    const session = await deepgram({
+      apiKey: "test-key",
+      keepAliveMs: 15,
+      model,
+    }).open({
+      format: {
+        channels: 1,
+        container: "raw",
+        encoding: "pcm_s16le",
+        sampleRateHz: 16000,
+      },
+      sessionId: `dg-keepalive-${model}`,
+    });
+    const socket = MockWebSocket.lastInstance;
+    if (!socket) {
+      throw new Error("Mock WebSocket was not created.");
+    }
+    await Bun.sleep(60);
+    const keepAliveMessages = socket.sent.filter(
+      (payload) => typeof payload === "string" && payload.includes("KeepAlive"),
+    );
+    const binaryFrames = socket.sent.filter(
+      (payload) => payload instanceof Uint8Array,
+    );
+    await session.close("unit-test");
 
-		return { binaryFrames, keepAliveMessages };
-	};
+    return { binaryFrames, keepAliveMessages };
+  };
 
-	test('nova keeps the socket alive with the KeepAlive control message', async () => {
-		const original = globalThis.WebSocket;
-		try {
-			globalThis.WebSocket = MockWebSocket as never;
-			const { keepAliveMessages } = await openIdleSession('nova-3');
-			expect(keepAliveMessages.length).toBeGreaterThan(0);
-		} finally {
-			globalThis.WebSocket = original;
-		}
-	});
+  test("nova keeps the socket alive with the KeepAlive control message", async () => {
+    const original = globalThis.WebSocket;
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
+      const { keepAliveMessages } = await openIdleSession("nova-3");
+      expect(keepAliveMessages.length).toBeGreaterThan(0);
+    } finally {
+      globalThis.WebSocket = original;
+    }
+  });
 
-	test('Flux keeps the socket alive with silence frames, never KeepAlive', async () => {
-		const original = globalThis.WebSocket;
-		try {
-			globalThis.WebSocket = MockWebSocket as never;
-			const { binaryFrames, keepAliveMessages } =
-				await openIdleSession('flux-general-multi');
-			expect(keepAliveMessages).toHaveLength(0);
-			expect(binaryFrames.length).toBeGreaterThan(0);
-		} finally {
-			globalThis.WebSocket = original;
-		}
-	});
+  test("Flux keeps the socket alive with silence frames, never KeepAlive", async () => {
+    const original = globalThis.WebSocket;
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
+      const { binaryFrames, keepAliveMessages } =
+        await openIdleSession("flux-general-multi");
+      expect(keepAliveMessages).toHaveLength(0);
+      expect(binaryFrames.length).toBeGreaterThan(0);
+    } finally {
+      globalThis.WebSocket = original;
+    }
+  });
 });

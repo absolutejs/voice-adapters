@@ -49,20 +49,20 @@ cartesia({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Cartesia API key. |
-| `voice` | yes | — | Either a voice id string (shorthand for `{ id, mode: "id" }`) or `{ embedding, mode: "embedding" }` for live cloning. |
-| `model` | no | `"sonic-2"` | Cartesia model id. |
-| `outputFormat.container` | no | `"raw"` | Must be `"raw"` for streaming. |
-| `outputFormat.encoding` | no | `"pcm_s16le"` | `pcm_s16le`, `pcm_f32le`, `pcm_mulaw` (telephony), or `pcm_alaw`. |
-| `outputFormat.sampleRate` | no | `24_000` | 8 / 16 / 22_050 / 24 / 44.1 / 48 kHz. |
-| `language` | no | — | Forwarded to Cartesia. |
-| `speed` | no | — | `slow` / `normal` / `fast` or a numeric multiplier. |
-| `transport` | no | `"sse"` | `"sse"` (server-sent events with base64 frames) or `"http"` (raw chunked bytes). |
-| `version` | no | `"2024-11-13"` | `Cartesia-Version` header. |
-| `baseUrl` | no | `"https://api.cartesia.ai"` | Override for self-hosted or staging environments. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets. |
+| Option                    | Required | Default                     | Notes                                                                                                                 |
+| ------------------------- | -------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`                  | yes      | —                           | Cartesia API key.                                                                                                     |
+| `voice`                   | yes      | —                           | Either a voice id string (shorthand for `{ id, mode: "id" }`) or `{ embedding, mode: "embedding" }` for live cloning. |
+| `model`                   | no       | `"sonic-2"`                 | Cartesia model id.                                                                                                    |
+| `outputFormat.container`  | no       | `"raw"`                     | Must be `"raw"` for streaming.                                                                                        |
+| `outputFormat.encoding`   | no       | `"pcm_s16le"`               | `pcm_s16le`, `pcm_f32le`, `pcm_mulaw` (telephony), or `pcm_alaw`.                                                     |
+| `outputFormat.sampleRate` | no       | `24_000`                    | 8 / 16 / 22_050 / 24 / 44.1 / 48 kHz.                                                                                 |
+| `language`                | no       | —                           | Forwarded to Cartesia.                                                                                                |
+| `speed`                   | no       | —                           | `slow` / `normal` / `fast` or a numeric multiplier.                                                                   |
+| `transport`               | no       | `"sse"`                     | `"sse"` (server-sent events with base64 frames) or `"http"` (raw chunked bytes).                                      |
+| `version`                 | no       | `"2024-11-13"`              | `Cartesia-Version` header.                                                                                            |
+| `baseUrl`                 | no       | `"https://api.cartesia.ai"` | Override for self-hosted or staging environments.                                                                     |
+| `fetch`                   | no       | `globalThis.fetch`          | Inject for tests; opportunistic HTTP/2 multiplexing is enabled for HTTPS targets.                                     |
 
 ## Notes
 

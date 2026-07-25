@@ -23,9 +23,9 @@ const app = voice({
     apiKey: process.env.NEETS_API_KEY!,
     voiceId: "us-male-2",
     // optional:
-    model: "ar-diff-50k",      // default; or 'style-tts-2' / 'vits'
-    format: "pcm",             // default; only "pcm" is supported for streaming
-    sampleRate: 22_050,        // default
+    model: "ar-diff-50k", // default; or 'style-tts-2' / 'vits'
+    format: "pcm", // default; only "pcm" is supported for streaming
+    sampleRate: 22_050, // default
     language: "en-us",
     temperature: 0.7,
   }),
@@ -34,17 +34,17 @@ const app = voice({
 
 ## Options
 
-| Option | Required | Default | Notes |
-| --- | --- | --- | --- |
-| `apiKey` | yes | — | Neets API key, sent as `X-API-Key`. |
-| `voiceId` | yes | — | Neets voice id. |
-| `model` | no | `ar-diff-50k` | `ar-diff-50k`, `style-tts-2`, `vits`, or a future Neets model id. |
-| `format` | no | `pcm` | Must be `pcm`. `mp3` / `wav` are rejected because they aren't streamable frame-by-frame. |
-| `sampleRate` | no | `22050` | Forwarded as `sample_rate`. |
-| `language` | no | — | Forwarded as `language` (e.g. `en-us`, `es-es`). |
-| `temperature` | no | — | Forwarded inside `params`. |
-| `baseUrl` | no | `https://api.neets.ai` | Override for staging. |
-| `fetch` | no | `globalThis.fetch` | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS. |
+| Option        | Required | Default                | Notes                                                                                    |
+| ------------- | -------- | ---------------------- | ---------------------------------------------------------------------------------------- |
+| `apiKey`      | yes      | —                      | Neets API key, sent as `X-API-Key`.                                                      |
+| `voiceId`     | yes      | —                      | Neets voice id.                                                                          |
+| `model`       | no       | `ar-diff-50k`          | `ar-diff-50k`, `style-tts-2`, `vits`, or a future Neets model id.                        |
+| `format`      | no       | `pcm`                  | Must be `pcm`. `mp3` / `wav` are rejected because they aren't streamable frame-by-frame. |
+| `sampleRate`  | no       | `22050`                | Forwarded as `sample_rate`.                                                              |
+| `language`    | no       | —                      | Forwarded as `language` (e.g. `en-us`, `es-es`).                                         |
+| `temperature` | no       | —                      | Forwarded inside `params`.                                                               |
+| `baseUrl`     | no       | `https://api.neets.ai` | Override for staging.                                                                    |
+| `fetch`       | no       | `globalThis.fetch`     | Inject for tests; opportunistic HTTP/2 multiplexing on outbound HTTPS.                   |
 
 ## Notes
 

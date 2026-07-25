@@ -16,14 +16,14 @@ bun add @absolutejs/voice @absolutejs/voice-deepgram
 ## Setup
 
 ```ts
-import { deepgram } from '@absolutejs/voice-deepgram';
+import { deepgram } from "@absolutejs/voice-deepgram";
 
 const stt = deepgram({
-	apiKey: process.env.DEEPGRAM_API_KEY!,
-	model: 'nova-3',
-	language: 'en-US',
-	punctuate: true,
-	smartFormat: true
+  apiKey: process.env.DEEPGRAM_API_KEY!,
+  model: "nova-3",
+  language: "en-US",
+  punctuate: true,
+  smartFormat: true,
 });
 ```
 
@@ -71,6 +71,7 @@ Supported options include:
 
 `error` events now include `code` when available from Deepgram and include request identifiers when present.
 If the websocket fails to authenticate or cannot open, the adapter throws with:
+
 - transport details (or close reason)
 - the websocket URL (query params only)
 - effective timeout used for open handshake
