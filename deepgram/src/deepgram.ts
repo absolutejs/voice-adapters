@@ -616,9 +616,13 @@ const buildLiveOptions = (
     liveOptions.extra = config.extra;
   }
 
-  const keyterm = config.keyterms ?? config.keyterm;
-  if (keyterm !== undefined) {
-    liveOptions.keyterm = keyterm;
+  const promptTerms = config.keyterms ?? config.keyterm;
+  if (promptTerms !== undefined) {
+    // Deepgram split vocabulary prompting by model generation: Nova-3 and
+    // Flux accept `keyterm`, while Nova-2 accepts the legacy `keywords`
+    // parameter. Sending `keyterm` with Nova-2 rejects the websocket upgrade
+    // before a meeting source can start.
+    liveOptions[model === "nova-2" ? "keywords" : "keyterm"] = promptTerms;
   }
 
   return omitUndefined(liveOptions);

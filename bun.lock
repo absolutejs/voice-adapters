@@ -65,7 +65,7 @@
     },
     "deepgram": {
       "name": "@absolutejs/voice-deepgram",
-      "version": "0.0.20-beta.104",
+      "version": "0.0.20-beta.105",
       "dependencies": {
         "@absolutejs/manifest": "0.7.2",
         "@sinclair/typebox": "0.34.52",

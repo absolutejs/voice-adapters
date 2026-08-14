@@ -58,7 +58,8 @@ Supported options include:
 - `numerals`
 - `profanityFilter`
 - `redact`
-- `keyterm` or `keyterms`
+- `keyterm` or `keyterms` (emitted as Nova-2 `keywords`, or as Nova-3/Flux
+  `keyterm`, according to the selected model)
 - `eotThreshold`
 - `eagerEotThreshold`
 - `eotTimeoutMs`

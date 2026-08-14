@@ -1,6 +1,6 @@
 {
   "name": "@absolutejs/voice-deepgram",
-  "version": "0.0.20-beta.104",
+  "version": "0.0.20-beta.105",
   "description": "Deepgram speech-to-text adapter for @absolutejs/voice",
   "repository": {
     "type": "git",

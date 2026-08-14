@@ -279,6 +279,46 @@ describe("deepgram adapter", () => {
     }
   });
 
+  test("uses Nova-2 keywords instead of unsupported keyterms", async () => {
+    const originalSocket = globalThis.WebSocket;
+    MockWebSocket.reset();
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
+
+      const session = await deepgram({
+        apiKey: "test-key",
+        keyterms: ["support"],
+        model: "nova-2",
+      }).open({
+        format: {
+          channels: 1,
+          container: "raw",
+          encoding: "pcm_s16le",
+          sampleRateHz: 16000,
+        },
+        lexicon: [
+          {
+            aliases: ["on spark"],
+            text: "onSpark",
+          },
+        ],
+        sessionId: "unit-nova-2-keywords",
+      });
+      await session.close("unit");
+
+      expect(MockWebSocket.lastInstance).not.toBeNull();
+      const url = new URL(MockWebSocket.lastInstance!.url);
+      const keywords = url.searchParams.getAll("keywords");
+
+      expect(keywords).toContain("support");
+      expect(keywords).toContain("onSpark");
+      expect(keywords).toContain("on spark");
+      expect(url.searchParams.has("keyterm")).toBe(false);
+    } finally {
+      globalThis.WebSocket = originalSocket;
+    }
+  });
+
   test("caps oversized keyterm lists to a transport-safe subset", async () => {
     const originalSocket = globalThis.WebSocket;
     MockWebSocket.reset();
