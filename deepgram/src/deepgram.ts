@@ -557,6 +557,10 @@ const buildLiveOptions = (
     sample_rate: format.sampleRateHz,
   };
 
+  if (config.mipOptOut !== undefined) {
+    liveOptions.mip_opt_out = config.mipOptOut;
+  }
+
   if (!isFlux) {
     liveOptions.channels = format.channels;
     if (config.punctuate !== undefined) {

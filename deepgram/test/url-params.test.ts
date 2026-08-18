@@ -68,6 +68,63 @@ class MockWebSocket {
 }
 
 describe("deepgram adapter", () => {
+  test("maps model-improvement opt-out into the websocket URL", async () => {
+    const originalSocket = globalThis.WebSocket;
+    MockWebSocket.reset();
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
+
+      const session = await deepgram({
+        apiKey: "test-key",
+        mipOptOut: true,
+        model: "nova-3",
+      }).open({
+        format: {
+          channels: 1,
+          container: "raw",
+          encoding: "pcm_s16le",
+          sampleRateHz: 16000,
+        },
+        sessionId: "unit-mip-opt-out",
+      });
+      await session.close("unit");
+
+      expect(MockWebSocket.lastInstance).not.toBeNull();
+      const url = new URL(MockWebSocket.lastInstance!.url);
+      expect(url.searchParams.get("mip_opt_out")).toBe("true");
+    } finally {
+      globalThis.WebSocket = originalSocket;
+    }
+  });
+
+  test("omits model-improvement preference when it is not configured", async () => {
+    const originalSocket = globalThis.WebSocket;
+    MockWebSocket.reset();
+    try {
+      globalThis.WebSocket = MockWebSocket as never;
+
+      const session = await deepgram({
+        apiKey: "test-key",
+        model: "flux-general-en",
+      }).open({
+        format: {
+          channels: 1,
+          container: "raw",
+          encoding: "pcm_s16le",
+          sampleRateHz: 16000,
+        },
+        sessionId: "unit-mip-default",
+      });
+      await session.close("unit");
+
+      expect(MockWebSocket.lastInstance).not.toBeNull();
+      const url = new URL(MockWebSocket.lastInstance!.url);
+      expect(url.searchParams.get("mip_opt_out")).toBeNull();
+    } finally {
+      globalThis.WebSocket = originalSocket;
+    }
+  });
+
   test("does not include undefined query params in websocket URL", async () => {
     const originalSocket = globalThis.WebSocket;
     MockWebSocket.reset();

@@ -22,6 +22,7 @@ const stt = deepgram({
   apiKey: process.env.DEEPGRAM_API_KEY!,
   model: "nova-3",
   language: "en-US",
+  mipOptOut: true,
   punctuate: true,
   smartFormat: true,
 });
@@ -65,6 +66,7 @@ Supported options include:
 - `eotTimeoutMs`
 - `keepAliveMs`
 - `connectTimeoutMs`
+- `mipOptOut` (maps to Deepgram's `mip_opt_out` request option)
 - `tag`
 - `extra`
 

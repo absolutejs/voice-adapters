@@ -25,6 +25,8 @@ type DeepgramSharedOptions = {
   keyterms?: string | string[];
   keepAliveMs?: number;
   connectTimeoutMs?: number;
+  /** Opt the request out of Deepgram model-improvement use. */
+  mipOptOut?: boolean;
   tag?: string | string[];
   extra?: Record<string, string>;
 };
