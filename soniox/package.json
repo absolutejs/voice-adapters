@@ -1,6 +1,6 @@
 {
   "name": "@absolutejs/voice-soniox",
-  "version": "0.0.1-beta.5",
+  "version": "0.0.1-beta.6",
   "description": "Soniox real-time speech-to-text adapter for @absolutejs/voice",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
     },
     "./manifest.json": "./dist/manifest.json"
   },
-  "license": "CC BY-NC 4.0",
+  "license": "Apache-2.0",
   "author": "Alex Kahn",
   "scripts": {
     "build": "rm -rf dist && bun build ./src/index.ts ./src/manifest.ts --outdir dist --target bun --external @absolutejs/manifest --external '@absolutejs/manifest/*' --external @absolutejs/voice --external '@absolutejs/voice/*' --external @sinclair/typebox --external '@sinclair/typebox/*' && tsc --emitDeclarationOnly --project tsconfig.json && absolute-manifest emit",
