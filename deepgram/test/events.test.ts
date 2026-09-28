@@ -193,6 +193,35 @@ describe("deepgram adapter", () => {
     });
   });
 
+  test("nova ends a turn on UtteranceEnd when speech_final never came", async () => {
+    await withDeepgramSession("nova-3", async (session, socket) => {
+      const ends: Array<unknown> = [];
+      session.on("endOfTurn", () => {
+        ends.push(1);
+      });
+
+      // A long sentence finalized in pieces, none of them speech_final.
+      for (const transcript of ["Juniper, create a task", "due Friday"])
+        socket.emitMessage({
+          channel: { alternatives: [{ transcript, confidence: 0.99 }] },
+          is_final: true,
+          language: "en",
+          speech_final: false,
+          type: "Results",
+        });
+      await Bun.sleep(1);
+      expect(ends).toHaveLength(0);
+
+      socket.emitMessage({
+        channel: [0, 1],
+        last_word_end: 3.1,
+        type: "UtteranceEnd",
+      });
+      await Bun.sleep(1);
+      expect(ends).toHaveLength(1);
+    });
+  });
+
   test("deduplicates duplicate Flux end-of-turn events", async () => {
     await withDeepgramSession("flux-general-en", async (session, socket) => {
       const finals: Array<{ transcript: { [key: string]: unknown } }> = [];
