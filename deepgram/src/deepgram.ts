@@ -940,11 +940,16 @@ export const deepgram = (config: DeepgramSTTOptions): STTAdapter => ({
           return;
         }
 
+        // Flux reports turns natively. For the nova models, UtteranceEnd (sent
+        // when utteranceEndMs is set) is Deepgram's end-of-utterance signal for
+        // when speech_final never comes, e.g. background noise keeps the
+        // endpointer open, so it ends the turn too.
         if (
-          emitsNativeEndOfTurn &&
-          (type === "UtteranceEnd" ||
-            type === "EndOfTurn" ||
-            type === "EagerEndOfTurn")
+          (emitsNativeEndOfTurn &&
+            (type === "UtteranceEnd" ||
+              type === "EndOfTurn" ||
+              type === "EagerEndOfTurn")) ||
+          (!emitsNativeEndOfTurn && type === "UtteranceEnd")
         ) {
           const now = Date.now();
           const signal = `${type}:${JSON.stringify(payload)}`;
